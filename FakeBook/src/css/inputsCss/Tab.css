@@ -1,0 +1,25 @@
+/* SearchTab.css */
+
+.tab {
+  display: flex;
+  align-items: center;
+  background-color: #f0f2f5;
+  border-radius: 50px;
+  padding: 5px 10px;
+  margin-left: 20px;
+  width: 250px; 
+  height: 30px;
+  cursor: pointer; 
+  border: var(--border-darkness, 1px) solid  #f0f2f5; 
+}
+
+.tab input[type="text"] {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  flex: 1;
+  margin-right: 10px;
+  font-size: 14px;
+   
+}
+

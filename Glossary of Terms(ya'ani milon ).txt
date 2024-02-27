@@ -1,0 +1,5 @@
+this file is to prevent me from going on and on to google to check what certian words mean(such as restful api,how to stop sucidal thoughts and such)
+
+API-Application Programming Interface
+Rest- Representational State Transfer
+RESTful API - an interface that two computer systems use to exchange information securely over the internet.

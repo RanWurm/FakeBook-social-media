@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/gradient_background"
+    tools:context="com.example.projectpart2.newPostActivity">
+
+    <LinearLayout
+        android:id="@+id/new_post_top_layout"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:background="@drawable/lower_border"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/closeButton"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/ic_close"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Create post"
+            android:textSize="27dp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_weight="5"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/postButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Post"
+            android:textSize="20dp"
+            android:background="@drawable/button_background"
+            android:layout_weight="2"/>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/new_post_author_layout"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/new_post_top_layout">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/authorImage"
+        android:layout_width="55dp"
+        android:layout_height="match_parent"
+        app:shapeAppearanceOverlay="@style/CircularImageView"
+        android:scaleType="centerCrop"/>
+    <TextView
+        android:id="@+id/tvAuthor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:layout_marginTop="5dp"
+        android:textStyle="bold"
+        android:layout_gravity="left"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="5dp"/>
+    </LinearLayout>
+    <EditText
+        android:id="@+id/new_post_content"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        app:layout_constraintTop_toBottomOf="@id/new_post_author_layout"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:hint="@string/new_post"
+        />
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/new_post_content">
+
+        <!-- ImageView for displaying the selected image -->
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnSelectImage"
+            android:layout_width="240dp"
+            android:layout_height="48dp"
+            android:textSize="16dp"
+            android:layout_marginBottom="20dp"
+            android:layout_gravity="center"
+            android:textColor="@color/black"
+            android:background="@drawable/select_image_button"
+            android:text="@string/select_image" />
+
+        <ImageView
+            android:id="@+id/imageViewUpload"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            />
+
+        <!-- Button for triggering the image selection -->
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

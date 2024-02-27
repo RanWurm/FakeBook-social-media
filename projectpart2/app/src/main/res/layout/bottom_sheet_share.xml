@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+   <TextView
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginTop="8dp"
+       android:text="Share to"
+       android:gravity="center"
+       android:textSize="30dp"
+       android:textStyle="bold"/>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <ImageButton
+        android:id="@+id/btnShareSmartphone"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_weight="1"
+        android:src="@drawable/ic_smartphone"/>
+
+    <ImageButton
+        android:id="@+id/btnShareChat"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_weight="1"
+        android:src="@drawable/ic_chat" />
+
+    <ImageButton
+        android:id="@+id/btnShareFeed"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_weight="1"
+        android:src="@drawable/ic_feed" />
+
+    <ImageButton
+        android:id="@+id/btnShareLink"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_weight="1"
+        android:src="@drawable/ic_link" />
+
+</LinearLayout>
+</LinearLayout>

@@ -1,0 +1,25 @@
+.interaction-button {
+    width: 28px;
+    height: 32px;
+    background-color: rgb(255, 255, 255);
+    border-color: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-right:30px;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+    
+}
+.dark-mode .interaction-button{
+    background-color:#333;
+    
+}
+.dark-mode .interaction-button:hover{
+    background-color:#334;
+}
+
+.like-button:hover {
+    background-color:#333;
+}
+

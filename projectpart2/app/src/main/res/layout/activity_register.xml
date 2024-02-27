@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background"
+    android:orientation="vertical"
+    android:text="@string/app_name"
+    tools:context="com.example.projectpart2.RegisterActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="550dp"
+        android:orientation="vertical"
+        android:padding="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.333"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
+
+
+        <EditText
+            android:id="@+id/editTextText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/edittext_border"
+            android:ems="10"
+            android:hint="@string/login_etUsername"
+            android:inputType="textPersonName"
+            android:padding="10dp" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/password_note"
+            android:padding="5dp"
+            android:text="The password should be at least 8 characters long, and contain
+letters and digits."
+            android:textSize="15sp" />
+
+
+        <EditText
+            android:id="@+id/editTextTextPassword"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/edittext_border"
+            android:ems="10"
+            android:hint="@string/login_etPassword"
+            android:inputType="textPassword"
+            android:padding="10dp" />
+
+        <EditText
+            android:id="@+id/editTextTextPasswordVerification"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/edittext_border"
+            android:ems="10"
+            android:hint="@string/register_password_verification"
+            android:inputType="textPassword"
+            android:padding="10dp" />
+
+        <EditText
+            android:id="@+id/editTextTextDisplay"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/edittext_border"
+            android:ems="10"
+            android:hint="@string/register_display_name"
+            android:inputType="text"
+            android:padding="10dp" />
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="15dp">
+
+            <!-- ImageView for displaying the selected image -->
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnSelectImage"
+                android:layout_width="240dp"
+                android:layout_height="48dp"
+                android:textSize="16dp"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/black"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/select_image_button"
+                android:text="@string/select_image" />
+
+            <ImageView
+                android:id="@+id/imageViewUpload"
+                android:layout_width="100dp"
+                android:layout_height="100dp" />
+
+            <!-- Button for triggering the image selection -->
+
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/button_background"
+            android:text="@string/register"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="fakebook"
+        android:textColor="#3131EF"
+        android:textSize="45sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,17 @@
+.component-container {
+	position: relative;
+	/* Set the position of the container to relative */
+  }
+  
+  .delete-button {
+	position: absolute;
+	top: 5px; /* Adjust this value for vertical positioning */
+	right: 5px; /* Adjust this value for horizontal positioning */
+	background-color: transparent;
+	border: none;
+	cursor: pointer;
+	width: 40px;
+	height: 40px;
+  }
+  
+ 

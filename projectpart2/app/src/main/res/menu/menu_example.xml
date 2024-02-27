@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_option_profile"
+        android:title="Profile"/>
+    <item
+        android:id="@+id/menu_option_messenger"
+        android:title="Messenger"/>
+    <!-- Add more items as needed -->
+    <item
+        android:id="@+id/menu_option_logout"
+        android:title="Log out"/>
+
+</menu>
