@@ -33,4 +33,9 @@ const login = async (req,res) => {
 		res.status(500).json({error:"Something went Wrong!"});
 	}
 };
+
+const getUserById = 0;
+const editUserById = 0;
+const deleteUserById = 0;
+const getFriendsList = 0;
 module.exports = { createUser,login};

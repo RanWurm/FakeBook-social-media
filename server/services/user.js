@@ -32,4 +32,8 @@ const login = async (uName,pWord) =>{
 	return user;
 	
 }
+const getUserById = 0;
+const editUserById = 0;
+const deleteUserById = 0;
+const getFriendsList = 0;
 module.exports = {createUser,login};
