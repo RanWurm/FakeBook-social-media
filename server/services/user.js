@@ -19,3 +19,17 @@ const createUser = async(uName,pWord,fakeNick,profPic) => {
 		console.log("some Error");
 	}
 };
+
+const login = async (uName,pWord) =>{
+	let user = await User.findOne({userName: uName,password:pWord});
+	if (user != null){
+		const nToken = jwt.sign({userName:uName}, key);
+		user = await User.findOneAndUpdate(
+			{userName: uName},
+			{token: nToken}
+		);
+	}
+	return user;
+	
+}
+module.exports = {createUser,login};
