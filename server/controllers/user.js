@@ -1,107 +1,235 @@
-const User = require('../models/user');
+const { User, FriendRequest } = require('../models/user');
 const jwt = require('jsonwebtoken');
 const userService = require('../services/user.js');
 const key = "133221333123111";
 const postController = require('../controllers/post.js');
+const { ObjectId } = require('mongoose').Types;
 
-function tokenIsValid(token){
+function tokenIsValid (token) {
 	try {
-		const dec = jew.verify(token,key)
-		if(dec !== undefined){
+		const dec = jwt.verify(token, key);
+		if (dec !== undefined) {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
-	} catch(error){
+	} catch (error) {
 		return false;
 	}
 }
 
-
-export const createUser = async (req,res) => {
-	try{
-		const {userName,password,nickName,profilePicture} = req.body;
-		const isUserNameExist = await User.findOne({userName});
-		
-		if(isUserNameExist){
-		res.status(409).json({error:'user Name is taken'});
-		}
-		const user = await userService.createUser(username,password,nickName,profilePicture);
-		const {username: userName1, password:userPassword, nickName: userNickName, profilePicture: userProfilePic } = user;
-		res.status(200).json({username: userName1, password:userPassword, nickName: userNickName, profilePicture: userProfilePic });
-	} catch(error){
-		res.status(500).json({ error: 'faild to Register' });
-	}	
-};
-
-
-export const login = async (req,res) => {
-	try{
-		const {userName,password} = req.body;
-		const user = await userService.login(userName,password);
-		if(!user){
-			return res.status(404).json({error: "Invalid username or password"});
-		}
-		res.status(200).json({token:user.token});
-		
-	} catch(error){
-		res.status(500).json({error:"Something went Wrong!"});
-	}
-};
-
-export const getUserById = async(req,res) =>{
-	try{
-		const {username} = req.params;
-		const user = await userService.getUserById(userName);
-		if(user == null){
-			return res.status(404).json({error: "user not found!"});
-		}
-		const {username:userName,nickname:nickName,profilepicture:profilePicture,id:id,token:token,friendsList:friendsList} = user
-		res.status(200).json({username:userName,nickname:nickName,profilepicture:profilePicture,id:id,token:token,friendsList:friendsList})
-	}catch(error){
-		res.status(500).json({error: "something went worng!"})
-	}
-	
-	
-} 
-
-export const deleteUserById = async(req,res) =>{
-	if(req.headers.authorization){
-		const data = req.headers.authorization.split(" ")[1];
-		const parsData = JSON.parse(data);
-		const token = parsData.token;
-		try{
-		if(tokenIsValid(token)){
-			idToDel = req.params.id;
-			await userService.deleteUserById(idToDel,token);
-			return res.status(200).json();
-		} else{
-			return res.status(401).json({error: "invalid Token!"});
-		}
-		
-	}catch(error){
-		return res.status(500).json({error:"something went wrong!"});
-	}	
-}
-	return res.status(403).send("token needed!")		
-
-}
-
-export const getFriendsList = async (req, res) => {
+module.exports.createUser = async (req, res) => {
 	try {
-	  const userId = req.params; 
-	  const friendsList = await userService.getFriendsList(userId);
-	  res.status(200).json(friendsList);
+		const { userName, password, nickName, profilePicture } = req.body;
+
+		// Check if the username already exists
+		const existingUser = await User.findOne({ userName });
+		if (existingUser) {
+			return res.status(409).json({ error: 'Username is already taken' });
+		}
+		const newUser = await userService.createUser(userName, password, nickName, profilePicture);
+		res.status(201).json(newUser);
 	} catch (error) {
-	  res.status(500).json({ error: error.message });
+		console.error('Failed to register:', error);
+		res.status(500).json({ error });
 	}
-  };
-  
-  
-  export const getPosts = async(req,res) =>{
-	
-  }
+};
 
-export const editUserById = 0;
+module.exports.login = async (req, res) => {
+	try {
+		const { userName, password } = req.body;
+		const user = await userService.login(userName, password);
+		if (!user) {
+			return res.status(404).json({ error: "Invalid username or password" });
+		}
+		res.status(200).json({ user });
+
+	} catch (error) {
+		res.status(500).json({ error: "Something went wrong!" });
+	}
+};
+
+module.exports.getUserById = async (req, res) => {
+	const { username } = req.query;
+	try {
+		const user = await userService.getUserById(username);
+		if (user == null) {
+			return res.status(404).json({ error: "User not found!" });
+		}
+		const { username: userName, nickname: nickName, profilepicture: profilePicture, id, token, friendsList } = user;
+		res.status(200).json({ user });
+	} catch (error) {
+		res.status(500).json({ error: "Something went wrong!" });
+	}
+};
+
+module.exports.deleteUserById = async (req, res) => {
+	if (req.headers.authorization) {
+		const token = req.headers.authorization.split(" ")[ 1 ];
+		try {
+			if (tokenIsValid(token)) {
+				const { id: idToDel } = req.params;
+				const user = await userService.deleteUserById(Number(idToDel), token);
+				return res.status(200).json({ msg: "User Deleted", user, id: idToDel });
+			} else {
+				return res.status(401).json({ error: "Invalid Token!" });
+			}
+		} catch (error) {
+			return res.status(500).json({ error: "Something went wrong!" });
+		}
+	}
+	return res.status(403).send("Token needed!");
+};
+
+module.exports.getFriendsList = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const user = await userService.getFriendsList(id);
+		res.status(200).json({ friendList: user.friends });
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};
+
+module.exports.getPosts = async (req, res) => {
+	try {
+		res.json('get user post ');
+	} catch (error) {
+		res.json('Error');
+	}
+};
 
 
+module.exports.editUserById = async (req, res) => {
+	try {
+		const { id } = req.query;
+		const { newData } = req.body;
+		if (!id || !newData) {
+			return res.status(400).json({ error: "Bad request, missing parameters" });
+		}
+
+		const updatedUser = await User.findByIdAndUpdate(id, newData, { new: true });
+
+		if (!updatedUser) {
+			return res.status(404).json({ error: "User not found" });
+		}
+
+		return res.status(200).json({ message: "User updated successfully", user: updatedUser });
+	} catch (error) {
+		console.error('Error editing user:', error);
+		return res.status(500).json({ error: "Internal server error" });
+	}
+};
+
+
+module.exports.sendFriendRequest = async (req, res) => {
+	try {
+		const { senderId, recipientId } = req.params;
+		const sender = await User.findById(senderId);
+		const recipient = await User.findById(recipientId);
+
+		const existingRequest = recipient.friendRequests.find(
+			(request) => request.sender.toString() === senderId.toString()
+		);
+
+		if (existingRequest) {
+			res.json({ error: 'Friend request already exists' });
+		}
+
+		const newRequest = new FriendRequest({
+			sender: senderId,
+			recipient: recipientId
+		});
+
+		recipient.friendRequests.push(newRequest);
+		await recipient.save();
+
+		res.json({ message: 'Req sent successfully' });
+	} catch (error) {
+		res.json({ error: error.message });
+	}
+};
+
+
+module.exports.approveFriendRequest = async (req, res) => {
+	try {
+		const { recipientId, requestId } = req.params;
+		const recipient = await User.findById(recipientId);
+		const request = recipient.friendRequests.id(requestId);
+
+		if (!request) {
+			return res.status(404).json({ error: 'Friend request not found' });
+		}
+
+		request.status = 'accepted';
+		recipient.friends.push(request.sender);
+		const sender = await User.findById(request.sender);
+		sender.friends.push(recipientId);
+		recipient.friendRequests.pull(requestId);
+		await recipient.save();
+		await sender.save();
+		return res.status(200).json({ message: 'Friend request approved successfully' });
+	} catch (error) {
+		return res.status(400).json({ error: error.message });
+	}
+};
+
+
+module.exports.denyFriendRequest = async (req, res) => {
+	try {
+		const { recipientId, requestId } = req.params;
+
+		const recipient = await User.findById(recipientId);
+		const request = recipient.friendRequests.id(requestId);
+
+		if (!request) {
+			return res.json({ error: 'Friend request not found' });
+		}
+
+		recipient.friendRequests.pull(requestId);
+		await recipient.save();
+
+		res.json({ message: 'Friend request denied successfully' });
+	} catch (error) {
+		res.json({ error: error.message });
+	}
+};
+
+
+
+module.exports.deleteFriend = async (req, res) => {
+	try {
+		const { userId, friendId } = req.params;
+
+		// Find the current user
+		const user = await User.findById(userId);
+		if (!user) {
+			return res.status(404).json({ error: 'User not found' });
+		}
+
+		const friendIndex = user.friends.findIndex(
+			friend => String(friend) === friendId
+		);
+
+		if (friendIndex === -1) {
+			return res.status(404).json({ error: 'Friend not found' });
+		}
+
+		// Update the deletedAt field for the friend
+		user.friends[ friendIndex ].deletedAt = new Date();
+
+		// Save the changes
+		await user.save();
+
+		// Find the friend user and remove the current user from their friends list
+		const friend = await User.findById(friendId);
+		friend.friends = friend.friends.filter(
+			(friendObj) => String(friendObj) !== userId
+		);
+		await friend.save();
+
+		return res.status(200).json({ message: 'Friend removed successfully' });
+	} catch (error) {
+		return res.status(400).json({ error: error.message });
+	}
+};

@@ -18,7 +18,7 @@ router.route('/:id/:friends').get(userController.getFriendsList);
 // }
 
 //In The making Section{
-	router.route('/:id/posts').get(userController.getPosts);
+	router.route('/:id/posts/:pid').delete(postController.deletePost);
 
 //}
 
@@ -29,7 +29,7 @@ router.route('/:id/:friends').get(userController.getFriendsList);
 router.route('/:id').patch(userController.editUserById);
 
 router.route('/:id/posts/:pid').patch(postController.editPost);
-router.route('/:id/posts/:pid').delete(postController.deletePost);
+
 router.route('/:id/:friends').post(userController.getFriendsList);
 router.route('/:id/:friends/:fid').patch(userController.approveFriendReq);
 router.route('/:id/:friends/:fid').delete(userController.delFrienReq);
