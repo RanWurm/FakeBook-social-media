@@ -12,11 +12,14 @@ router.route('/tokens').post(userController.login);
 router.route('/:id').get(userController.getUserById);
 //delete user
 router.route('/:id').delete(userController.deleteUserById);
+//get friends list of user
+router.route('/:id/:friends').get(userController.getFriendsList);
 
 // }
 
 //In The making Section{
-	router.route('/:id/:friends').get(userController.getFriendsList);
+	router.route('/:id/posts').get(userController.getPosts);
+
 //}
 
 
@@ -25,10 +28,9 @@ router.route('/:id').delete(userController.deleteUserById);
 
 router.route('/:id').patch(userController.editUserById);
 
-router.route('/:id/posts').get(postController.getPosts);
 router.route('/:id/posts/:pid').patch(postController.editPost);
 router.route('/:id/posts/:pid').delete(postController.deletePost);
-router.route('/:id/:friends').get(userController.getFriendsList);
 router.route('/:id/:friends').post(userController.getFriendsList);
-
+router.route('/:id/:friends/:fid').patch(userController.approveFriendReq);
+router.route('/:id/:friends/:fid').delete(userController.delFrienReq);
 //}

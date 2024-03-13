@@ -96,6 +96,11 @@ export const getFriendsList = async (req, res) => {
 	  res.status(500).json({ error: error.message });
 	}
   };
+  
+  
+  export const getPosts = async(req,res) =>{
+	
+  }
 
 export const editUserById = 0;
 
