@@ -4,32 +4,55 @@ const userController = require('../controllers/user.js');
 const postController = require('../controllers/post.js');
 const authenticate = require('../middlewares/auth.js');
 
-//done section{
-
 //creates the user
 router.route('/').post(userController.createUser);
+
 //login the user and provide with token
 router.route('/tokens').post(userController.login);
-// will change this too get req
-router.route('/getUser').get(userController.getUserById);
-//delete user
-// router.route('/deleteUser').delete(userController.deleteUserById);
-router.route('/:id').delete(userController.deleteUserById);
-//get friends list of user
-router.route('/:id/:friends').post(userController.getFriendsList);
 
-// }
+//get user by its id
+router.route('/:id').get(userController.getUserById);
 
-//In The making Section{
-router.route('/:id/posts').get(userController.getPosts);
-//}
-// TODO
+//get user posts
+router.route('/:id/posts').get(postController.getPosts);
+
+//creates new post
+router.post('/:id/posts', authenticate, postController.createPost);
+
+//edit user post by post id
+router.patch('/:id/posts/posts/:pid', authenticate, postController.editPost);
+
+//edit user by its id
 router.route('/:id').patch(userController.editUserById);
-router.post('/:senderId/sendFriendRequest/:recipientId', authenticate, userController.sendFriendRequest);
-router.patch('/:recipientId/friends/:requestId', authenticate, userController.approveFriendRequest);
-router.post('/:recipientId/friends/:requestId', authenticate, userController.denyFriendRequest);
-router.delete('/:userId/friends/:friendId', authenticate, userController.deleteFriend);
+
+//delete user postpost by id
+router.delete('/:id/posts/posts/:pid', authenticate, postController.deletePost);
+
+
+//delete user by its id
+router.route('/:id').delete(userController.deleteUserById);
+
+//get friends list of user
 router.get('/:id/:friends', userController.getFriendsList);
+
+//send friend request
+router.post('/:id/:friends', authenticate, userController.sendFriendRequest);
+
+//approve friend request
+router.patch('/:id/:friends/:fid', authenticate, userController.approveFriendRequest);
+
+//denay friend request
+router.post('/:id/:friends/:fid', authenticate, userController.denyFriendRequest);
+
+//delete friend from friends list i thought we need to implement this
+router.delete('/:id/:friends/:fid/:friendId', authenticate, userController.deleteFriend);
+
+
+
+
+
+
+
 
 
 module.exports = router;
