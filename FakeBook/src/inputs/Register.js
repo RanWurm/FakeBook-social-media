@@ -14,36 +14,84 @@ function Register() {
   let errors = ["User Name Invalid","PassWords must match","Password must contain atleas 6 latters","Nick Name Invalid",
                 "Image Required!"]
   const   [reasonForFail,setReasonForFail] = useState(null);
-  const handleRegister = ()=>{
-	const user = {
-		"userName": {username},
-		"passWord": {password},
-    "nickName": {nickName},
-    "image":    {userImage}
-		}
-	addUserToList([...usersList,user]);
-  }
-  
-  const handleConfirm = () => {
+  // const handleRegister = ()=>{
+	// const user = {
+	// 	"userName": {username},
+	// 	"passWord": {password},
+  //   "nickName": {nickName},
+  //   "image":    {userImage}
+	// 	}
+	// addUserToList([...usersList,user]);
+  // }
+
+  async function createUser() {
+    let base64Image = null; // Initialize base64Image
+
+    if (userImage) {
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        const binaryString = Array.from(new Uint8Array(e.target.result))
+          .map((byte) => String.fromCharCode(byte))
+          .join("");
+
+        // Convert binary string to Base64
+        base64Image = btoa(binaryString);
+      }
+    }
+    const formData = {
+      username: username,
+      password: password,
+      nickName: nickName,
+      confirmedPassword: confirmedPassword,
+      userImage: base64Image
+    };
+    try {
+      let url = "http://127.0.0.1:8080/api/users";
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      //number 409 could change
+      if (response.statusCode === 409) {
+        let data = await response.json();
+        return data; // Return data if not OK
+      }
+      return 200;
+    } catch (error) {
+      console.error("Error creating user:", error);
+      throw error; // Propagate the error if needed
+    }
+    }
+
+  const handleConfirm = async () => {
     if (username === ''){
       setReasonForFail(errors[0]);
-      setIsValid(false)
+      setIsValid(false);
     } else if(password !== confirmedPassword){
       setReasonForFail(errors[1]);
-      setIsValid(false)
+      setIsValid(false);
     }else if( password.length <= 5 ){
       setReasonForFail(errors[2]);
-      setIsValid(false)
+      setIsValid(false);
     }else if (nickName === ''){
       setReasonForFail(errors[3]);
       setIsValid(false)
     } else if(userImage === null){
       setReasonForFail(errors[4]);
-      setIsValid(false)
+      setIsValid(false);
     } else {
-	  setIsValid(true)
-    setApproveRegister(true);
-	  handleRegister();
+      let data = await createUser();
+      if (data === 200) {
+        setIsValid(true);
+        setApproveRegister(true);
+      } else {
+        //make this css
+        console.log("Taken");
+      }
     }
   };
   
@@ -121,6 +169,6 @@ function Register() {
       
     </div>
   );
-}
+    }
 
 export default Register;

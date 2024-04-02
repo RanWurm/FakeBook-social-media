@@ -8,7 +8,8 @@ function Login({upDateApproval,premissionRef}) {
   const [password, setPassword] = useState('');
   const [goToFeed,  setGoToFeed] = useState(false);
   const [isValid, setIsValid] = useState(false);
-  const [toReg, setToReg] = useState(false);  
+  const [toReg, setToReg] = useState(false);
+  //where do we check משתמש קיים
   const approvToBrowse = useRef(false);
  
   useEffect(()=>{

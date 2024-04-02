@@ -20,13 +20,13 @@ function App() {
 
   return (
     <div>
-    <Router>
-	  <Routes>
-    <Route path ="/" element = {<LoginPage isApproveToBrowse={approvToBrowse} onApproveToBrowse={handleSecurity} premissionRef={premissionToFeed} users={updatedUsers}/>}/>
-	  <Route path ="/feed" element = {<FeedPage isApproveToBorwse={approvToBrowse} onApproveToBrowse={handleSecurity} premissionRef={premissionToFeed}/>}/>
-	  <Route path ="/register" element = {<RegisterPage handleReg = {handleLRegister}/>}/>
-    </Routes>
-    </Router>
+      <Router>
+	      <Routes>
+          <Route path ="/" element = {<LoginPage isApproveToBrowse={approvToBrowse} onApproveToBrowse={handleSecurity} premissionRef={premissionToFeed} users={updatedUsers}/>}/>
+	        <Route path ="/feed" element = {<FeedPage isApproveToBorwse={approvToBrowse} onApproveToBrowse={handleSecurity} premissionRef={premissionToFeed}/>}/>
+	        <Route path ="/register" element = {<RegisterPage handleReg = {handleLRegister}/>}/>
+        </Routes>
+      </Router>
     </div>
    
 
