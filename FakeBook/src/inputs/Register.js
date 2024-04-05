@@ -24,30 +24,48 @@ function Register() {
 	// addUserToList([...usersList,user]);
   // }
 
+  const processFileInput = (event) => {
+    const selectedFile = event.target.files[0];
+    const fileURL = URL.createObjectURL(selectedFile);
+
+    const fileReader = new FileReader();
+
+    fileReader.onload = function (event) {
+        const binaryData = Array.from(new Uint8Array(event.target.result))
+            .map((byteUnit) => String.fromCharCode(byteUnit))
+            .join('');
+
+        // Encoding binary data to Base64
+        setUserImage(window.btoa(binaryData));
+        // Continue with the use of encodedImage as needed
+    };
+
+    fileReader.readAsArrayBuffer(selectedFile);
+};
+
   async function createUser() {
     let base64Image = null; // Initialize base64Image
-
-    if (userImage) {
+    console.log("Shalome2", userImage);
       const reader = new FileReader();
 
-      reader.onload = function (e) {
-        const binaryString = Array.from(new Uint8Array(e.target.result))
+      reader.onload = function (userImage) {
+        const binaryString = Array.from(new Uint8Array(userImage.target.result))
           .map((byte) => String.fromCharCode(byte))
           .join("");
-
+          console.log("Shalom3", binaryString);
         // Convert binary string to Base64
         base64Image = btoa(binaryString);
       }
-    }
+    console.log(base64Image + "Shalom");
     const formData = {
-      username: username,
+      userName: username,
       password: password,
       nickName: nickName,
       confirmedPassword: confirmedPassword,
-      userImage: base64Image
+      profilePicture: userImage
     };
     try {
-      let url = "http://127.0.0.1:8080/api/users";
+      let url = "http://127.0.0.1:5000/api/users";
       const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -160,7 +178,7 @@ function Register() {
             className='image_input'
             type="file"
             accept='image/*'
-            onChange={(e)=>setUserImage(e.target.files[0])}
+            onChange={processFileInput}
             required
           />
         </div>

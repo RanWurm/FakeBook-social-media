@@ -19,7 +19,6 @@ function Login({upDateApproval,premissionRef}) {
     if(condition){
       premissionRef.current= true;
       upDateApproval(premissionRef.current);
-      
     }
   });
  
@@ -36,12 +35,33 @@ function Login({upDateApproval,premissionRef}) {
     setPassword('');
   };
 
-  const handleLogin=()=>{
-    if(approvToBrowse.current.valueOf){
-      setGoToFeed(true);
-    }
-    
+  async function reqLogin() {
+        try {
+          let url = "http://127.0.0.1:5000" + "/api/tokens/";
+          const response = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({username:username, password:password}),
+          });
+          if (response.status === 405) {
+            return response;
+          }
+          let data = await response.json();
+          return data; // Return data if not OK
+        } catch (error) {
+          console.error("Error fetching token:", error);
+          throw error; // Propagate the error if needed
+        }
   }
+
+  const handleLogin= async ()=>{
+    let resp = await reqLogin();
+    console.log(resp);
+    //TODO: if we get error say "error", else save token and navigate to feed
+  }
+
   const handregister=()=>{
     setToReg(true);
   }
