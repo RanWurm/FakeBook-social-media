@@ -20,6 +20,7 @@ function tokenIsValid (token) {
 
 module.exports.createUser = async (req, res) => {
 	try {
+		console.log(req.body);
 		const { userName, password, nickName, profilePicture } = req.body;
 
 		// Check if the username already exists
@@ -43,7 +44,7 @@ module.exports.login = async (req, res) => {
 			return res.status(404).json({ error: "Invalid username or password" });
 		}
 		res.status(200).json({ user });
-
+		
 	} catch (error) {
 		res.status(500).json({ error: "Something went wrong!" });
 	}

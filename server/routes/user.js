@@ -7,9 +7,6 @@ const authenticate = require('../middlewares/auth.js');
 //creates the user
 router.route('/').post(userController.createUser);
 
-//login the user and provide with token
-router.route('/tokens').post(userController.login);
-
 //get user by its id
 router.route('/:id').get(userController.getUserById);
 
