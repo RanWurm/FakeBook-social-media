@@ -3,6 +3,7 @@ import {Navigate} from "react-router-dom"
 export default function PageNavigator({caller,task}) {
 	console.log("Page NAvi");
 	if(caller === 'LoginPage'){
+		console.log("hey")
 		return(<Navigate to="/feed"/>)
 		
 	}

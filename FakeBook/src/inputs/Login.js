@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import '../css/inputsCss/Login.css'; // Import the CSS file
 import { useRef,useEffect } from 'react';
 import PageNavigator from '../pages/PageNavigator';
+import { Navigate } from 'react-router-dom';
 function Login({upDateApproval,premissionRef}) {
   console.log("Login line 7")
   const [username, setUsername] = useState('');
@@ -36,6 +37,8 @@ function Login({upDateApproval,premissionRef}) {
   };
 
   async function reqLogin() {
+    console.log(username);
+    console.log(password);
         try {
           let url = "http://127.0.0.1:5000" + "/api/tokens/";
           const response = await fetch(url, {
@@ -43,7 +46,7 @@ function Login({upDateApproval,premissionRef}) {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({username:username, password:password}),
+            body: JSON.stringify({userName:username, password:password}),
           });
           if (response.status === 405) {
             return response;
@@ -60,6 +63,8 @@ function Login({upDateApproval,premissionRef}) {
     let resp = await reqLogin();
     console.log(resp);
     //TODO: if we get error say "error", else save token and navigate to feed
+    return <Navigate to="/feed" />;
+    //console.log("hey from here");
   }
 
   const handregister=()=>{
