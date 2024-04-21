@@ -1,19 +1,17 @@
-// Post.js
 import React, { useState } from 'react';
-import '../css/inputsCss/Post.css'; 
-import '../css/inputsCss/Tab.css'
-import Edit from '../res/edit.png'
-import like_icon from '../res/like.png'
-import golden_like from '../res/golden_like.png'
-import Comment from '../res/comment_icon.png'
-import comment_icon from '../res/comment_icon.png'
+import '../css/inputsCss/Post.css';
+import '../css/inputsCss/Tab.css';
+import Edit from '../res/edit.png';
+import like_icon from '../res/like.png';
+import golden_like from '../res/golden_like.png';
+import Comment from '../res/comment_icon.png';
+import comment_icon from '../res/comment_icon.png';
 import CommentSection from './CommentSection';
-import Send from '../res/send_button.png'
-import TrashCan from '../res/garbage.png'
-import '../css/buttonsCss/Button.css'
+import Send from '../res/send_button.png';
+import TrashCan from '../res/garbage.png';
+import '../css/buttonsCss/Button.css';
 
-
-function Post  ({ postID, author, icon, content, date, handleDelete, handleEdit, handleGetPost, isDarkMode }) {
+function Post({ postID, author, icon, content, date, isDarkMode }) {
     const [likeCount, setLikeCount] = useState(0);
     const [inputText, setInputText] = useState('');
     const [textList, setTextList] = useState([]);
@@ -21,12 +19,12 @@ function Post  ({ postID, author, icon, content, date, handleDelete, handleEdit,
     const [isEditing, setIsEditing] = useState(false);
     const [editedContent, setEditedContent] = useState(content);
 
-    const handleShowpost = () => {
+    const handleShowPost = () => {
         setShowPosts(!showPosts);
     };
 
     const handleLikeClick = () => {
-        setLikeCount(likeCount + 1);
+        setLikeCount(likeCount + 1);  // This should ideally also update on the server
     };
 
     const handleInputChange = (event) => {
@@ -40,23 +38,37 @@ function Post  ({ postID, author, icon, content, date, handleDelete, handleEdit,
         }
     };
 
-    const handleDeleteClick = () => {
-        handleDelete(postID);
+    const deletePost = () => {
+        fetch(`http://localhost:3000/api/posts/deletePost`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: postID })
+        })
+        .then(response => response.json())
+        .then(() => {
+            console.log('Post deleted successfully');
+            // Optionally trigger a refresh of the post list in the parent component here
+        })
+        .catch(error => console.error('Error deleting post:', error));
     };
 
-    const handleEditClick = () => {
-        handleGetPost(postID);
-        setIsEditing(true);
+    const editPost = () => {
+        fetch(`http://localhost:3000/api/posts/editPost`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: postID, content: editedContent })
+        })
+        .then(response => response.json())
+        .then(() => {
+            setIsEditing(false);
+            // Optionally refresh the post to show updated content
+        })
+        .catch(error => console.error('Error updating post:', error));
     };
 
-    const handleSaveEdit = () => {
-        setIsEditing(false);
-        handleEdit(postID, editedContent);
-    };
-    
-    let like = isDarkMode ?  golden_like : like_icon
-   
-    return ( 
+    let like = isDarkMode ? golden_like : like_icon;
+
+    return (
         <div key={postID} className={`post ${isDarkMode ? 'dark-mode' : ''}`}>
             <div className="post-header">
                 <img className="avatar" src={icon} alt={`${author}'s avatar`} />
@@ -65,22 +77,22 @@ function Post  ({ postID, author, icon, content, date, handleDelete, handleEdit,
                     <div className='post_right_col'>
                         <div className='delete_post_button'>
                             {isEditing ? (
-                               <button className ="interaction-button" onClick={handleSaveEdit}>
-                               <img className="interaction-button" src = {Edit}></img>
-                               </button>
+                                <button className ="interaction-button" onClick={editPost}>
+                                    <img className="interaction-button" src={Edit} alt="Save Edit" />
+                                </button>
                             ) : (
-                              <button className ="interaction-button" onClick={handleEditClick}>
-                              <img className="interaction-button" src = {Edit}></img>
-                            </button>
+                                <button className ="interaction-button" onClick={() => setIsEditing(true)}>
+                                    <img className="interaction-button" src={Edit} alt="Edit" />
+                                </button>
                             )}
-                            <button className ="interaction-button" onClick={ handleDeleteClick}>
-                              <img className="interaction-button" src = {TrashCan}></img>
+                            <button className="interaction-button" onClick={deletePost}>
+                                <img className="interaction-button" src={TrashCan} alt="Delete" />
                             </button>
                         </div>
                     </div>
                 </div>
                 <div className="post-date">
-                {new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    {new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                 </div>
             </div>
             <div className="post-content">
@@ -90,27 +102,29 @@ function Post  ({ postID, author, icon, content, date, handleDelete, handleEdit,
                         value={editedContent}
                         onChange={(e) => setEditedContent(e.target.value)}
                     />
-                ) : (<p>{editedContent}</p>)}
+                ) : (
+                    <p>{content}</p>
+                )}
             </div>
             <span className="interactions-count">
                 <span className='right_col'>
                     {likeCount}
-                    <img className="interaction-icon" src={like} alt='' /> 
+                    <img className="interaction-icon" src={like} alt="" />
                     {textList.length}
-                    <img className="interaction-icon" src={comment_icon} alt='' />
+                    <img className="interaction-icon" src={comment_icon} alt="" />
                 </span>
-            </span> 
+            </span>
             <div className='interactions-section'>
                 <div className='post-buttons-bar'>
                     <div className='post_left_col'>
-                    <button className ="interaction-button" onClick={handleLikeClick}>
-                          <img className="interaction-button" src = {like}></img>
+                        <button className="interaction-button" onClick={handleLikeClick}>
+                            <img className="interaction-button" src={like} alt="" />
                         </button>
                     </div>
                     <div className='post_center_col'>
-                    <button className ="interaction-button" onClick={handleShowpost} >
-                    <img className="interaction-button" src = {Comment}></img>
-                    </button>
+                        <button className="interaction-button" onClick={handleShowPost}>
+                            <img className="interaction-button" src={Comment} alt="" />
+                        </button>
                     </div>
                 </div>
             </div>
@@ -128,9 +142,9 @@ function Post  ({ postID, author, icon, content, date, handleDelete, handleEdit,
                         <img className='send-button-logo' src={Send} alt="" />
                     </button>  
                 </div>
-            </div> 
+            </div>
         </div>
     );
-};
+}
 
 export default Post;

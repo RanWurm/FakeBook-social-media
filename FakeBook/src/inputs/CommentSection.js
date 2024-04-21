@@ -1,20 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import '../css/inputsCss/Comment.css';
 
-const Comment = ({commentId,commentList,issShow }) => {
-  if (commentList===0 || issShow === false){
-    return(<div></div>);
-  }
-  return (
-    <div>
-      <ul>
-        {/* Render the list items */}
-        {commentList.map((text, index) => (
-          <div className="comment" key={index}>{text}</div>
-        ))}
-       </ul>
+const CommentSection = ({ postId }) => {
+    const [comments, setComments] = useState([]);
+
+    useEffect(() => {
+        fetch(`http://localhost:3000/api/comments/${postId}`)
+            .then(response => response.json())
+            .then(data => setComments(data.commentSection)) // Assuming 'data' has a 'commentSection'
+            .catch(error => console.error('Error fetching comments:', error));
+    }, [postId]);
+
+    return (
+        <div>
+            {comments.map((comment, index) => (
+                <div key={index}>{comment.content}</div>
+            ))}
         </div>
-  );
+    );
 };
 
-export default Comment;
+export default CommentSection;
