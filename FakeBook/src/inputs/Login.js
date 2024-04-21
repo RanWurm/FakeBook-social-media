@@ -1,109 +1,89 @@
-import React, { useState } from 'react';
-import '../css/inputsCss/Login.css'; // Import the CSS file
-import { useRef,useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import '../css/inputsCss/Login.css';
 import PageNavigator from '../pages/PageNavigator';
 import { Navigate } from 'react-router-dom';
-function Login({upDateApproval,premissionRef}) {
-  console.log("Login line 7")
+
+function Login({upDateApproval, premissionRef}) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [goToFeed,  setGoToFeed] = useState(false);
-  const [isValid, setIsValid] = useState(false);
+  const [goToFeed, setGoToFeed] = useState(false);
   const [toReg, setToReg] = useState(false);
-  //where do we check משתמש קיים
-  const approvToBrowse = useRef(false);
- 
-  useEffect(()=>{
-    console.log("Login line 16")
+  const [isValid, setIsValid] = useState(false); // Adding this line correctly defines the isValid state and its setter
 
-    const condition = goToFeed;
-    if(condition){
-      premissionRef.current= true;
+  useEffect(() => {
+    if (goToFeed) {
+      premissionRef.current = true;
       upDateApproval(premissionRef.current);
     }
-  });
- 
-  const handleValid = () =>{
-    if (username !== '' && password !==''){
-      setIsValid(true);
-    }
-  }
-  
+  }, [goToFeed, upDateApproval, premissionRef]);
+
+  const handleValid = () => {
+    setIsValid(username !== '' && password !== '');
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     handleValid();
-    setUsername('');
-    setPassword('');
+    if (isValid) {
+      setUsername('');
+      setPassword('');
+    }
   };
 
   async function reqLogin() {
-    console.log(username);
-    console.log(password);
-        try {
-          let url = "http://127.0.0.1:5000" + "/api/tokens/";
-          const response = await fetch(url, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({userName:username, password:password}),
-          });
-          if (response.status === 405) {
-            return response;
-          }
-          let data = await response.json();
-          return data; // Return data if not OK
-        } catch (error) {
-          console.error("Error fetching token:", error);
-          throw error; // Propagate the error if needed
-        }
+    try {
+      let url = "http://127.0.0.1:5000/api/tokens/";
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({userName: username, password: password}),
+      });
+      let data = await response.json();
+      if (response.ok) {
+        return data; // Assuming data has a token or similar
+      } else {
+        throw new Error('Login failed');
+      }
+    } catch (error) {
+      console.error("Error fetching token:", error);
+    }
   }
 
-  const handleLogin= async ()=>{
+  const handleLogin = async () => {
     let resp = await reqLogin();
-    console.log(resp);
-    //TODO: if we get error say "error", else save token and navigate to feed
-    return <Navigate to="/feed" />;
-    //console.log("hey from here");
+    if (resp) { // Assuming resp is truthy on success
+      console.log("Login successful:", resp);
+      setGoToFeed(true);
+    } else {
+      console.log("Login failed.");
+    }
+  };
+
+  if (toReg) {
+    return <PageNavigator task="/register" />;
   }
 
-  const handregister=()=>{
-    setToReg(true);
-  }
- 
-  if (toReg){
-    //TODO update that the user want to register
-    return <PageNavigator task = "/register"/>
+  if (goToFeed) {
+    return <Navigate to="/feed" />;
   }
 
   return (
-    <div className="login-container"> {/* Added a class for styling */}
+    <div className="login-container">
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
-        <div className="form-group"> {/* Added a class for styling */}
+        <div className="form-group">
           <label htmlFor="username">Username:</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
+          <input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
         </div>
-        <div className="form-group"> {/* Added a class for styling */}
+        <div className="form-group">
           <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </div>
-        <button className = "login_button"type="submit" onClick={handleLogin}>Login</button>
+        <button className="login_button" type="submit" onClick={handleLogin}>Login</button>
       </form>
-      <button className='register_button'onClick={handregister}>Create Fakount</button>
-      
+      <button className='register_button' onClick={() => setToReg(true)}>Create Account</button>
     </div>
   );
 }
