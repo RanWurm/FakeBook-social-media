@@ -38,7 +38,8 @@ module.exports.createUser = async (req, res) => {
 
 module.exports.login = async (req, res) => {
 	try {
-		const { userName, password } = req.body;
+		const userName = req.body.userName;
+  		const password = req.body.password;
 		const user = await userService.login(userName, password);
 		if (!user) {
 			return res.status(404).json({ error: "Invalid username or password" });
@@ -51,15 +52,17 @@ module.exports.login = async (req, res) => {
 };
 
 module.exports.getUserById = async (req, res) => {
-	const { username } = req.query;
+	const { username } = req.params.id;
 	try {
 		const user = await userService.getUserById(username);
+		console.log(user);
 		if (user == null) {
 			return res.status(404).json({ error: "User not found!" });
 		}
 		const { username: userName, nickname: nickName, profilepicture: profilePicture, id, token, friendsList } = user;
 		res.status(200).json({ user });
 	} catch (error) {
+		console.log(error);
 		res.status(500).json({ error: "Something went wrong!" });
 	}
 };

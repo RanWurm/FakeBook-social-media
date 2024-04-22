@@ -38,15 +38,16 @@ module.exports.login = async (uName, pWord) => {
 	}
 };
 
-module.exports.getUserById = async (userName) => {
+module.exports.getUserById = async (username) => {
 	try {
-		const user = await User.findOne({ userName });
+		const user = await User.findOne({ username: username });  // Using findOne to search by username
 		return user;
 	} catch (error) {
-		console.error("Error getting user by ID:", error);
+		console.error("Error getting user by username:", error);
 		throw error;
 	}
 };
+
 
 module.exports.editUserById = async (userId, newData) => {
 	try {
