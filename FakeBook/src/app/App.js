@@ -8,7 +8,7 @@ import { UserProvider } from '../pages/UserContext';
 
 function App() {
 	const [approvToBrowse,setApproveToBrowse] = useState(false);
-  const [updatedUsers,SetUpdatedUsers]  = useState(users)
+  const [updatedUsers,SetUpdatedUsers]  = useState(users);
 	let premissionToFeed = useRef(approvToBrowse);
 
 	const handleSecurity = (approval) =>{

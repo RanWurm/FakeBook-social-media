@@ -67,10 +67,14 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef }) {
         const userI = JSON.parse(localStorage.getItem('userI'));
         if (inputText.trim() !== '') {
             const newPost = {
+                author: userI.username, // Assuming the username is the author
+                profilePicture: userI.profilePicture, // You need to manage how to get/set profile picture
                 content: inputText,
                 date: new Date().toISOString()
             };
-            fetch(`http://127.0.0.1:5000/api/users/${userI.username}/posts`, {
+            console.log("Hillel the king");
+            console.log("DATE: ",newPost.date);
+            fetch(`http://127.0.0.1:5000/api/users/${userI.username}/posts/createPost`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

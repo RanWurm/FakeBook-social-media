@@ -52,6 +52,39 @@ function Post({ postID, author, icon, content, date, isDarkMode }) {
         .catch(error => console.error('Error deleting post:', error));
     };
 
+    // async function createPost() {
+    //     const postData = {
+    //         postID: postID,
+    //         author: author,
+    //         profilePicture: profilePicture,
+    //         content: content,
+    //         dateCreated: dateCreated,
+    //         likeCount: likeCount,
+    //         // commentCount: commentCount,
+    //         // //the list of comments
+    //         // commentSection: [ Comment ]
+    //     };
+    //     try {
+    //       let url = "http://127.0.0.1:3000/api/posts/createPost";
+    //       const response = await fetch(url, {
+    //         method: "POST",
+    //         headers: {
+    //           "Content-Type": "application/json",
+    //         },
+    //         body: JSON.stringify(postData),
+    //       });
+    //       //number 409 could change
+    //       if (response.statusCode === 409) {
+    //         let data = await response.json();
+    //         return data; // Return data if not OK
+    //       }
+    //       return 200;
+    //     } catch (error) {
+    //       console.error("Error creating user:", error);
+    //       throw error; // Propagate the error if needed
+    //     }
+    //     }
+
     const editPost = () => {
         fetch(`http://localhost:3000/api/posts/editPost`, {
             method: 'POST',
