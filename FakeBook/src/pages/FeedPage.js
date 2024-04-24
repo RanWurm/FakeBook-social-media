@@ -1,70 +1,101 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import '../css/pagesCss/FeedPage.css';
 import NavBar from '../Bars/NavBar';
 import Post from '../inputs/Post';
-import RanPic from '../res/myprofile.png';
-import posts from '../data/db.json';
-import HillelPic from '../res/hilel.png';
-import YuliPic from '../res/yuli.png';
 import PageNavigator from './PageNavigator';
+import { useUser } from '../pages/UserContext';
 
-function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef }) {
+// function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef }) {
+//     const { user } = useUser(); // Use user context to access user details
+//     const [inputText, setInputText] = useState('');
+//     const [tposts, setPosts] = useState([]);
+function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef,user}) {
+    // const { user, logOut } = useUser();
+    const [tposts, setPosts] = useState([]);
     const [inputText, setInputText] = useState('');
+    const [isDarkMode, setIsDarkMode] = useState(false); // Example of local state definition for dark mode
     const [logOut, setLogOut] = useState(false);
-    const [isDarkMode, setIsDarkMode] = useState(false); // Change to true for initial dark mode
-    const [clickedPostId, setClickedPostId] = useState(null);
-    const [editedPostText, setEditedPostText] = useState(null);
-    const [removedPostId, setRemovePostId] = useState(null);
-    const [tposts, setPosts] = useState(posts);
+    const handleRemovePost = (id) => {
+        // Define what happens when a post is removed
+    };
+
+    const handlePostEdit = (id, newContent) => {
+        // Define what happens when a post is edited
+    };
 
     useEffect(() => {
         if (logOut) {
             onApproveToBrowse(false);
             premissionRef.current = false;
         }
-    }, [logOut, onApproveToBrowse, premissionRef]);
+        fetchPosts(); // Call fetch posts on component mount
+    }, []);
+
+    const fetchPosts = () => {
+        const userI = JSON.parse(localStorage.getItem('userI'));
+        console.log(userI);
+        fetch(`http://127.0.0.1:5000/api/users/${userI.username}/posts`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${userI.token}`
+            },
+        })
+        .then(response => {
+            if (response.status === 404) {
+                console.log('No posts found, setting posts to empty.');
+                setPosts([]); // Set posts to empty if the response is 404
+                return; // Stop further processing
+            }
+            if (!response.ok) {
+                throw new Error('Failed to fetch posts');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data) { // Ensure there's data before setting it
+                setPosts(data);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching posts:', error);
+            setPosts([]); // Optionally reset posts on any error
+        });
+    };
+    
+
+    const handleNewPost = () => {
+        const userI = JSON.parse(localStorage.getItem('userI'));
+        if (inputText.trim() !== '') {
+            const newPost = {
+                author: userI.username, // Assuming the username is the author
+                profilePicture: userI.profilePicture, // You need to manage how to get/set profile picture
+                content: inputText,
+                date: new Date().toISOString()
+            };
+            console.log("Hillel the king");
+            console.log("DATE: ",newPost.date);
+            fetch(`http://127.0.0.1:5000/api/users/${userI.username}/posts/createPost`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${userI.token}`
+                },
+                body: JSON.stringify(newPost)
+            })
+            .then(response => response.json())
+            .then(post => {
+                setPosts([post, ...tposts]);
+                setInputText('');
+            })
+            .catch(error => console.error('Error creating post:', error));
+        }
+    };
 
     const handleLogOut = () => {
         setLogOut(true);
-    };
-
-    const toggleDarkMode = () => {
-        setIsDarkMode(prevMode => !prevMode);
-    };
-
-    if (!isApproveToBorwse) {
-        return <PageNavigator caller={'FeedPage'} />;
-    }
-
-    let profilePics = {
-        Ran: {
-            pic: RanPic,
-        },
-        Hilel: {
-            pic: HillelPic,
-        },
-        Yuli: {
-            pic: YuliPic,
-        },
-    };
-
-    const handleClickPost = (id) => {
-        setClickedPostId(id);
-    };
-
-    const handleNewPost = () => {
-        const today = new Date();
-        if (inputText.trim() !== '') {
-            const newPost = {
-                postId: Date.now(),
-                author: 'Ranel',
-                icon: 'Ran',
-                content: inputText,
-                date:   today.toString()
-            };
-            setPosts([newPost, ...tposts]);
-            setInputText('');
-        }
+        onApproveToBrowse(false);
+        premissionRef.current = false;
+        // Redirect or perform additional cleanup
     };
 
     const handleSubmit = (e) => {
@@ -72,42 +103,26 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef }) {
         handleNewPost();
     };
 
-    const handleRemovePost = (id) => {
-        setRemovePostId(id);
-        setPosts(prevPosts => prevPosts.filter(post => post.postId !== id));
-    };
-
-    const handlePostEdit = (id, text) => {
-        setClickedPostId(id);
-        setEditedPostText(text);
-        const updatedPosts = tposts.map(post =>
-            post.postId === id ? { ...post, content: text } : post
-        );
-        setPosts(updatedPosts);
-        setClickedPostId(null);
-        setEditedPostText(null);
-    };
-    
+    if (!isApproveToBorwse) {
+        return <PageNavigator caller={'FeedPage'} />;
+    }
 
     return (
         <div className={`app-container ${isDarkMode ? 'dark-mode' : ''}`}>
-            <NavBar firstHandleClick={handleLogOut} darkMode = {isDarkMode}toggleDarkMode={toggleDarkMode} />
+            <NavBar firstHandleClick={handleLogOut} />
             <div className="float-parent-element">
                 <div className="float-child-element">
                     <div className="left">
                         {tposts.map(post => (
                             <Post
-                                darkMode = {isDarkMode}
-                                key={post.postId}
-                                postID={post.postId}
+                                key={post._id}
+                                postID={post._id}
                                 author={post.author}
-                                icon={profilePics[post.icon].pic}
                                 content={post.content}
-                                date = {post.date}
+                                date={post.date}
                                 handleDelete={handleRemovePost}
                                 handleEdit={handlePostEdit}
-                                handleGetPost={handleClickPost}
-                                isDarkMode={isDarkMode} // Pass isDarkMode as a prop
+                                isDarkMode={isDarkMode} // Assuming isDarkMode is managed globally or passed as a prop
                             />
                         ))}
                     </div>
@@ -115,20 +130,18 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef }) {
                 <div className="float-child-element">
                     <div className="right">
                         <div className="new_post_box">
-                            <h2 className="post_head">Write New FakePost</h2>
+                            <h2 className="post_head">Write New Post</h2>
                             <form onSubmit={handleSubmit}>
                                 <input
                                     className="new-post-input"
                                     type="text"
                                     value={inputText}
                                     onChange={e => setInputText(e.target.value)}
-                                    placeholder="What's on your fakeMind..."
+                                    placeholder="What's on your mind..."
                                     required
                                 />
+                                <button className="new-post-button">Add Post</button>
                             </form>
-                            <button className="new-post-button" onClick={handleNewPost}>
-                                add FakPost
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -138,3 +151,6 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef }) {
 }
 
 export default FeedPage;
+
+
+

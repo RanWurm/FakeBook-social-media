@@ -3,9 +3,10 @@ import '../css/pagesCss/LoginPage.css'
 import Login from '../inputs/Login'
 import HomePageText from '../decoratives/HomePageText'
 import PageNavigator from './PageNavigator'
+import {useState} from 'react'
 
 
-export default function LoginPage({isApproveToBrowse,onApproveToBrowse,premissionRef,users}) {
+export default function LoginPage({isApproveToBrowse,onApproveToBrowse,premissionRef,setUser}) {
 	if(isApproveToBrowse){
 		return(
 		<PageNavigator caller={"LoginPage"}/>
@@ -18,7 +19,7 @@ export default function LoginPage({isApproveToBrowse,onApproveToBrowse,premissio
 		<HomePageText/>
 		</div>
 		<div className='left_child'>
-		<Login upDateApproval = {onApproveToBrowse} premissionRef={premissionRef} users = {users}></Login>
+		<Login upDateApproval = {onApproveToBrowse} premissionRef={premissionRef} setUser={setUser}></Login>
 		</div>
 		</div>	
   )
