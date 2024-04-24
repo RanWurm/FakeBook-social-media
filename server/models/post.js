@@ -20,7 +20,7 @@ const Post = new Schema({
 	},
 	profilePicture: {
 		type: String,
-		required: true
+		required: false
 	},
 	content: {
 		type: String,
@@ -34,12 +34,12 @@ const Post = new Schema({
 		type: Number,
 		default: 0
 	},
-	commentCount: {
-		type: Number,
-		default: 0
-	},
-	//the list of comments
-	commentSection: [ Comment ]
+	// commentCount: {
+	// 	type: Number,
+	// 	default: 0
+	// },
+	// //the list of comments
+	// commentSection: [ Comment ]
 });
 
 module.exports = mongoose.model('Post', Post);

@@ -62,7 +62,7 @@ module.exports.getUserById = async (req, res) => {
 		const { username: userName, nickname: nickName, profilepicture: profilePicture, id, token, friendsList } = user;
 		res.status(200).json({ user });
 	} catch (error) {
-		console.log(error);
+		console.log(error)
 		res.status(500).json({ error: "Something went wrong!" });
 	}
 };

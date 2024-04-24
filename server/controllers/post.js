@@ -33,9 +33,11 @@ module.exports.createPost = async (req, res) => {
 		const savedPost = await newPost.save();
 
 		res.status(201).json(savedPost);
+		console.log("");
 	} catch (error) {
 		console.error('Error creating post:', error);
-		return res.status(500).json({ error });
+		return res.status(500).json({ error: error.message });
+		// return res.status(500).json({ error });
 	}
 };
 

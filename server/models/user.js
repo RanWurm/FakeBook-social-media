@@ -14,7 +14,7 @@ const UserSchema = new Schema({
 	nickName: { type: String, required: true },
 	profilePicture: { type: String, required: true },
 	id: { type: Number, required: true },
-	token: { type: String },
+	// token: { type: String },
 	friends: [ { type: Schema.Types.ObjectId, ref: 'User' } ],
 	friendRequests: [ FriendRequestSchema ]
 });
