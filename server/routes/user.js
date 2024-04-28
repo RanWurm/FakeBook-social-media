@@ -8,7 +8,7 @@ const authenticate = require('../middlewares/auth.js');
 router.route('/').post(userController.createUser);
 
 //get user by its id
-router.route('/:id').get(userController.getUserById);
+router.route('/:id').get(authenticate, userController.getUserById);
 
 //get user posts
 router.route('/:id/posts').get(postController.getPosts);
@@ -30,7 +30,7 @@ router.delete('/:id/posts/posts/:pid', authenticate, postController.deletePost);
 router.route('/:id').delete(userController.deleteUserById);
 
 //get friends list of user
-router.get('/:id/:friends', userController.getFriendsList);
+router.get('/:id/friends', authenticate, userController.getFriendsList);
 
 //send friend request
 router.post('/:id/:friends', authenticate, userController.sendFriendRequest);

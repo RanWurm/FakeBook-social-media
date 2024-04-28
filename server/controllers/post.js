@@ -17,13 +17,14 @@ module.exports.getPosts = async (req, res) => {
 
 module.exports.createPost = async (req, res) => {
 	try {
-		const { author, profilePicture, content } = req.body;
+		const { authorID, author, profilePicture, content } = req.body;
 		if (!author || !profilePicture || !content) {
 			return res.status(400).json({ error: "Bad request, missing parameters" });
 		}
 
 		// Create a new post with the provided data
 		const newPost = new Post({
+			authorID,
 			author,
 			profilePicture,
 			content

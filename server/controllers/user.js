@@ -52,19 +52,33 @@ module.exports.login = async (req, res) => {
 };
 
 module.exports.getUserById = async (req, res) => {
-	const { username } = req.params.id;
-	try {
-		const user = await userService.getUserById(username);
-		console.log(user);
-		if (user == null) {
-			return res.status(404).json({ error: "User not found!" });
-		}
-		const { username: userName, nickname: nickName, profilepicture: profilePicture, id, token, friendsList } = user;
-		res.status(200).json({ user });
-	} catch (error) {
-		console.log(error)
-		res.status(500).json({ error: "Something went wrong!" });
-	}
+    const userId = req.params.id; // the ID from the URL
+    const requesterId = req.user.id; // the ID of the authenticated user, set by the authenticate middleware
+
+    try {
+        // Find the target user by ID
+        const targetUser = await User.findById(userId).populate('friends', 'id'); // Populate only the id of friends
+
+        // Check if the target user was found
+        if (!targetUser) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Check if the target user is in the requester's friends list
+        const isFriend = targetUser.friends.some(friend => friend._id.equals(requesterId));
+
+        if (!isFriend) {
+            return res.status(403).json({ error: "Access denied: user is not a friend" });
+        }
+
+        // Send the user details if everything is okay
+        const { userName, nickName, profilePicture, id } = targetUser;
+        res.status(200).json({ userName, nickName, profilePicture, id });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Something went wrong" });
+    }
 };
 
 module.exports.deleteUserById = async (req, res) => {

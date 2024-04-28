@@ -14,6 +14,10 @@ const Post = new Schema({
 		default: () => Math.floor(Math.random() * 1000000),
 		unique: true
 	},
+	authorID: {
+		type: Number,
+		required: true
+	},
 	author: {
 		type: String,
 		required: true
@@ -38,8 +42,8 @@ const Post = new Schema({
 	// 	type: Number,
 	// 	default: 0
 	// },
-	// //the list of comments
-	// commentSection: [ Comment ]
+	//the list of comments
+	commentSection: [ Comment ]
 });
 
 module.exports = mongoose.model('Post', Post);
