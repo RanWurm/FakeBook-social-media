@@ -18,11 +18,8 @@ const Post = new Schema({
 		type: Number,
 		required: true
 	},
-	author: {
-		type: String,
-		required: true
-	},
-	profilePicture: {
+	
+	picture: {
 		type: String,
 		required: false
 	},
@@ -38,11 +35,6 @@ const Post = new Schema({
 		type: Number,
 		default: 0
 	},
-	// commentCount: {
-	// 	type: Number,
-	// 	default: 0
-	// },
-	//the list of comments
 	commentSection: [ Comment ]
 });
 
