@@ -54,31 +54,27 @@ async login (req, res) {
 }
 
 async getUserById (req, res) {
-    const userId = req.params.id; // the ID from the URL
-    const requesterId = req.user.id; // the ID of the authenticated user, set by the authenticate middleware
+    const userId = req.params.id;  // Custom numeric ID from the URL
+    const requesterId = req.user.id;  // ID of the authenticated user from JWT
 
     try {
-        // Find the target user by ID
-        const targetUser = await User.findById(userId).populate('friends', 'id'); // Populate only the id of friends
-
-        // Check if the target user was found
+        // Finding user by custom 'id' field and populating friends' details
+        const targetUser = await User.findOne({ id: userId }).populate('friends', 'userName nickName profilePicture id');
         if (!targetUser) {
             return res.status(404).json({ error: "User not found" });
         }
 
-        // Check if the target user is in the requester's friends list
-        const isFriend = targetUser.friends.some(friend => friend._id.equals(requesterId));
-
+        // Check if the requester is in the user's friends list by comparing custom 'id' field
+        const isFriend = targetUser.friends.some(friend => friend.id === requesterId);  // Ensure types are compatible
         if (!isFriend) {
             return res.status(403).json({ error: "Access denied: user is not a friend" });
         }
 
-        // Send the user details if everything is okay
+        // Return the user details
         const { userName, nickName, profilePicture, id } = targetUser;
         res.status(200).json({ userName, nickName, profilePicture, id });
-
     } catch (error) {
-        console.error(error);
+        console.error('Error retrieving user:', error);
         res.status(500).json({ error: "Something went wrong" });
     }
 }

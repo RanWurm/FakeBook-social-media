@@ -1,3 +1,4 @@
+const { UNSAFE_useRouteId } = require('react-router-dom');
 const User = require('../models/user.js');
 const jwt = require('jsonwebtoken');
 const key = "133221333123111";
@@ -46,13 +47,13 @@ class UserService {
 
 	async getUserById(userID){
 		try {
-			const user = await User.findById(userID); // Using Mongoose's findById method
+			const user = await User.findOne({ id: userID });
 			if (!user) {
 				throw new Error('User not found');
 			}
 			return user;
 		} catch (error) {
-			// Optionally, handle more specific errors if necessary
+			
 			throw error;
 		}
 	}
@@ -62,7 +63,8 @@ class UserService {
 
 	editUserById = async (userId, newData) => {
 		try {
-			const updatedUser = await User.findByIdAndUpdate(userId, newData, { new: true });
+			// Use findOneAndUpdate with the custom 'id' field
+			const updatedUser = await User.findOneAndUpdate({ id: userId }, newData, { new: true });
 			if (!updatedUser) {
 				throw new Error("User not found");
 			}
