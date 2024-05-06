@@ -1,12 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const FriendRequestSchema = new Schema({
-	sender: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-	recipient: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-	status: { type: String, enum: [ 'pending', 'accepted', 'denied' ], default: 'pending' },
-	createdAt: { type: Date, default: Date.now }
-});
+
 
 const UserSchema = new Schema({
 	userName: { type: String, required: true },
@@ -16,10 +11,9 @@ const UserSchema = new Schema({
 	id: { type: Number, required: true },
 	token: { type: String },
 	friends: [ { type: Schema.Types.ObjectId, ref: 'User' } ],
-	friendRequests: [ FriendRequestSchema ]
+	friendRequests: [ { type: Schema.Types.ObjectId, ref: 'User' } ]
 });
 
 const User = mongoose.model('User', UserSchema);
-const FriendRequest = mongoose.model('FriendRequest', FriendRequestSchema);
 
-module.exports = { User, FriendRequest };
+module.exports = { User };
