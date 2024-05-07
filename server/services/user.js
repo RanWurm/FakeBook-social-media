@@ -3,9 +3,9 @@ const User = require('../models/user.js');
 const jwt = require('jsonwebtoken');
 const key = "133221333123111";
 
-class UserService {
 
-	createUser = async (uName, pWord, fakeNick, profPic) => {
+
+module.exports.createUser = async (uName, pWord, fakeNick, profPic) => {
 		try {
 			const largestId = await User.findOne().sort({id: -1}).limit(1).select('id');
 			const userID = largestId ? largestId.id + 1 : 1;
@@ -25,11 +25,11 @@ class UserService {
 	};
 
 
-	login = async (uName, pWord) => {
+module.exports.login = async (uName, pWord) => {
 		try {
 			let user = await User.findOne({userName: uName, password: pWord});
 			if (user !== null) {
-				const nToken = jwt.sign({ id: user._id, userName: uName }, key);
+				const nToken = jwt.sign({ id: user.id, userName: uName }, key);
 				user = await User.findOneAndUpdate(
 					{ userName: uName },
 					{ token: nToken },
@@ -45,9 +45,9 @@ class UserService {
 	};
 
 
-	async getUserById(userID){
+	module.exports.getUserById = async (userID) => {
 		try {
-			const user = await User.findOne({ id: userID });
+			const user = await User.findOne({ id: userId }).populate('friends', 'userName nickName profilePicture id');
 			if (!user) {
 				throw new Error('User not found');
 			}
@@ -56,12 +56,10 @@ class UserService {
 			
 			throw error;
 		}
-	}
+	};
 
 
-
-
-	editUserById = async (userId, newData) => {
+module.exports.editUserById = async (userId, newData) => {
 		try {
 			// Use findOneAndUpdate with the custom 'id' field
 			const updatedUser = await User.findOneAndUpdate({ id: userId }, newData, { new: true });
@@ -76,7 +74,7 @@ class UserService {
 	};
 
 
-	deleteUserById = async (idToDel, token) => {
+module.exports.deleteUserById = async (idToDel, token) => {
 		try {
 			const userToDel = await User.findOneAndDelete({id: idToDel, token});
 			return userToDel;
@@ -87,7 +85,7 @@ class UserService {
 	};
 
 
-	getFriendsList = async (userId) => {
+module.exports.getFriendsList = async (userId) => {
 		try {
 			const user = await User.findById(userId);
 			if (!user) {
@@ -100,7 +98,7 @@ class UserService {
 		}
 	};
 
-	sendFriendRequest = async (senderId, userId) => {
+module.exports.sendFriendRequest = async (senderId, userId) => {
 		try {
 			const user = await User.findById(userId);
 			if (!user) {
@@ -121,7 +119,7 @@ class UserService {
 		}
 	};
 
-	async approveFriendRequest(requestorId, userId) {
+	module.exports.approveFriendRequest = async(requestorId, userId) => {
 		const recipient = await User.findById(userId);
 		if (!recipient) {
 			throw new Error('Recipient not found');
@@ -145,9 +143,9 @@ class UserService {
 	
 		await recipient.save();
 		await sender.save();
-	}
+	};
 
-	async deleteFriend(requestorId, deleteId) {
+module.exports.deleteFriend = async(requestorId, deleteId) => {
 		const user = await User.findById(requestorId);
 		if (!user) {
 			throw new Error('user not found');
@@ -168,9 +166,9 @@ class UserService {
 	
 		await user.save();
 		await deleted.save();
-	}
+	};
 
-	areFriends = async (userId, friendId) => {
+	module.exports.areFriends = async (userId, friendId) => {
 		try {
 			const user = await User.findById(userId).populate('friends');
 			return user.friends.some(friend => friend._id.toString() === friendId);
@@ -180,8 +178,6 @@ class UserService {
 		}
 	};
 
-	verifyUser = (requestedId, userId) => {
+	module.exports.verifyUser = (requestedId, userId) => {
 		return requestedId === userId;
-	}
-}
-module.exports = UserService;
+	};

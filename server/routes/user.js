@@ -5,7 +5,7 @@ const postController = require('../controllers/post.js');
 const authenticate = require('../middlewares/auth.js');
 
 //creates the user
-router.route('/').post(userController.createUser);
+router.post('/', userController.createUser); 
 
 
 //get user by its id
@@ -28,7 +28,7 @@ router.route('/:id/posts').post(authenticate, postController.createPost);
 router.route('/:id/posts/:pid').patch(authenticate, postController.editPost); 
 
 //delete user postpost by id
-router.route('/:id/posts/:pid').delete(authenticate, postController.editPost);
+router.route('/:id/posts/:pid').delete(authenticate, postController.deletePost);
 
 
 //get friends list of user
@@ -38,10 +38,10 @@ router.route('/:id/friends').get(authenticate, userController.getFriendsList);
 router.route('/:id/friends').post(authenticate, userController.sendFriendRequest);
 
 //approve friend request
-router.route('/:id/:friends/:fid').patch(authenticate, userController.approveFriendRequest); 
+router.route('/:id/friends/:fid').patch(authenticate, userController.approveFriendRequest); 
 
 //delete friend
-router.route('/:id/:friends/:fid').delete(authenticate, userController.deleteFriend); 
+router.route('/:id/friends/:fid').delete(authenticate, userController.deleteFriend); 
 
 
 module.exports = router;

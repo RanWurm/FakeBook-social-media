@@ -1,8 +1,8 @@
-const User = require('../models/User');
-const Post = require('../models/Post');
+const User = require('../models/user.js');
+const Post = require('../models/post.js');
 
 
-const getUserPosts = async (userId) => {
+module.exports.getUserPosts = async (userId) => {
     try {
         const posts = await Post.find({ author: userId })
                                 .sort({ dateCreated: -1 })
@@ -14,7 +14,7 @@ const getUserPosts = async (userId) => {
     }
 };
 
-const createPost = async (authorID, picture, content) => {
+module.exports.createPost = async (authorID, picture, content) => {
     const newPost = new Post({ authorID, picture, content });
     return await newPost.save();
 };
@@ -32,7 +32,7 @@ const editPost = async (postId, userId, newPicture, newContent) => {
     return await post.save();
 };
 
-const deletePost = async (postId, userId) => {
+module.exports.deletePost = async (postId, userId) => {
     const post = await Post.findOne({ postID: postId, authorID: userId }); // Ensure the post belongs to the user
     if (!post) {
         throw new Error('Post not found or unauthorized access');
@@ -41,7 +41,7 @@ const deletePost = async (postId, userId) => {
     return post;
 };
 
-const getFeedPosts = async(userId) => {
+module.exports.getFeedPosts = async(userId) => {
     try {
         // Fetch the user to get their friends list
         const user = await User.findById(userId).populate('friends');
@@ -65,7 +65,5 @@ const getFeedPosts = async(userId) => {
     }
 };
 
-module.exports = {
-    getUserPosts, createPost, editPost, deletePost, getFeedPosts
-};
+
 

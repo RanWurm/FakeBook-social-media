@@ -1,26 +1,12 @@
-const { User, FriendRequest } = require('../models/user');
+const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const userService = require('../services/user.js');
 const key = "133221333123111";
 const postController = require('../controllers/post.js');
 const { ObjectId } = require('mongoose').Types;
 
-function tokenIsValid (token) {
-	try {
-		const dec = jwt.verify(token, key);
-		if (dec !== undefined) {
-			return true;
-		} else {
-			return false;
-		}
-	} catch (error) {
-		return false;
-	}
-}
 
-class userController {
-
-async createUser(req, res) {
+module.exports.createUser = async(req, res) => {
 	try {
 		console.log(req.body);
 		const { userName, password, nickName, profilePicture } = req.body;
@@ -36,9 +22,9 @@ async createUser(req, res) {
 		console.error('Failed to register:', error);
 		res.status(500).json({ error });
 	}
-}
+};
 
-async login (req, res) {
+module.exports.login = async(req, res) => {
 	try {
 		const userName = req.body.userName;
   		const password = req.body.password;
@@ -51,15 +37,15 @@ async login (req, res) {
 	} catch (error) {
 		res.status(500).json({ error: "Something went wrong!" });
 	}
-}
+};
 
-async getUserById (req, res) {
+module.exports.getUserById = async(req, res) => {
     const userId = req.params.id;  // Custom numeric ID from the URL
     const requesterId = req.user.id;  // ID of the authenticated user from JWT
 
     try {
         // Finding user by custom 'id' field and populating friends' details
-        const targetUser = await User.findOne({ id: userId }).populate('friends', 'userName nickName profilePicture id');
+        const targetUser = await userController.getUserById(userId);
         if (!targetUser) {
             return res.status(404).json({ error: "User not found" });
         }
@@ -77,9 +63,9 @@ async getUserById (req, res) {
         console.error('Error retrieving user:', error);
         res.status(500).json({ error: "Something went wrong" });
     }
-}
+};
 
-async deleteUserById(req, res) {
+module.exports.deleteUserById = async(req, res) => {
     try {
         const userIdToDelete = req.params.id;  // Get the user ID from URL parameters
 
@@ -100,9 +86,9 @@ async deleteUserById(req, res) {
         console.error('Error deleting user:', error);
         return res.status(500).json({ error: "Internal server error" });
     }
-}
+};
 
-async getFriendsList (req, res) {
+module.exports.getFriendsList = async (req, res) => {
 	const userId = req.params.id;
     const requestorId = req.user.id;
 
@@ -118,19 +104,11 @@ async getFriendsList (req, res) {
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
-}
+};
 
 
 
-async getPosts (req, res) {
-	try {
-		res.json('get user post ');
-	} catch (error) {
-		res.json('Error');
-	}
-}
-
-async editUserById(req, res) {
+module.exports.editUserById = async(req, res) => {
     try {
         const userId = req.params.id;  // User ID from the URL parameters
         const { nickName, profilePicture } = req.body;  // Directly extract expected fields
@@ -160,10 +138,10 @@ async editUserById(req, res) {
         console.error('Error editing user:', error);
         return res.status(500).json({ error: "Internal server error" });
     }
-}
+};
 
 
-async sendFriendRequest(req, res) {
+module.exports.sendFriendRequest = async(req, res) => {
     try {
         const userId = req.params.id;
         const requestorId = req.user.id;
@@ -174,10 +152,10 @@ async sendFriendRequest(req, res) {
     } catch (error) {
         res.status(500).json({ error: error.message });  // It's good to specify an HTTP status code for errors.
     }
-}
+};
 
 
-async approveFriendRequest(req, res) {
+module.exports.approveFriendRequest = async(req, res) => {
     try {
         const userId = req.params.id;
         const approvedId = req.params.fid;
@@ -196,11 +174,11 @@ async approveFriendRequest(req, res) {
         console.error('Error approving friend request:', error);
         return res.status(400).json({ error: error.message });
     }
-}
+};
 
 
 
-async deleteFriend (req, res) {
+module.exports.deleteFriend = async(req, res) => {
 	try {
 		const userId = req.params.id;
         const friendToDelete = req.params.fid;
@@ -215,6 +193,5 @@ async deleteFriend (req, res) {
         console.error('Error deleting friend:', error);
         return res.status(400).json({ error: error.message });
     }
-}
-}
-module.exports = userController;
+};
+
