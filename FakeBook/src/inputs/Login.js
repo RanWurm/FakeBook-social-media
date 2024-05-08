@@ -1,107 +1,142 @@
-import React, { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
-import { useUser } from '../pages/UserContext';  // Ensure this import path is correct
-import '../css/inputsCss/Login.css'; // Confirm the CSS path
+import React, { useState, useEffect } from "react";
+import { Navigate } from "react-router-dom";
+import { useUser } from "../pages/UserContext"; // Ensure this import path is correct
+import "../css/inputsCss/Login.css"; // Confirm the CSS path
+import { toast } from "react-toastify";
 
-function Login({ upDateApproval, premissionRef, setUser }) {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [goToFeed, setGoToFeed] = useState(false);
-    const [toReg, setToReg] = useState(false);
-    const { fffff, logout } = useUser();
+function Login({ upDateApproval, premissionRef }) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [goToFeed, setGoToFeed] = useState(false);
+  const [toReg, setToReg] = useState(false);
+  const { setUser, logout } = useUser();
 
-    useEffect(() => {
-        if (goToFeed) {
-            upDateApproval(true);
-            premissionRef.current = true;
-            <Navigate to="/feed" />;
-        }
-    }, [goToFeed, upDateApproval, premissionRef]);
-
-    async function getUser() {
-      // Assuming SERVER_ADDRESS and username are provided
-      const SERVER_ADDRESS = "http://127.0.0.1:5000"; // Update with your actual server address
-      try {
-        const url = `${SERVER_ADDRESS}/api/users/${encodeURIComponent(username)}`;
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        if (response.status === 404) {
-          return 404; // Or handle 404 specifically if needed
-        }
-        const data = await response.json();
-        console.log(data);
-        return data; // Returns the entire user object
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        throw error; // Rethrowing the error might be necessary for caller to handle
-      }
+  useEffect(() => {
+    if (goToFeed) {
+      upDateApproval(true);
+      premissionRef.current = true;
+      <Navigate to="/feed" />;
     }
-    
+  }, [goToFeed, upDateApproval, premissionRef]);
 
-    async function handleLogin(e) {
-      e.preventDefault();
-      if (!username || !password) {
-          console.log("Please fill in both username and password.");
-          return;  // Exit early if credentials are not provided
-      }
-      const item = {
-        "userName": username,
-        "password": password
-      };
-      const res = await fetch('http://localhost:5000/api/Tokens', {
-        'method': 'post',
-        'headers': {
-          'Content-Type': 'application/json',
+  async function getUser(token) {
+    // Assuming SERVER_ADDRESS and username are provided
+    const SERVER_ADDRESS = `http://localhost:5000/api/users/getUser?username=${username}`; // Update with your actual server address
+    try {
+      const url = `${SERVER_ADDRESS}`;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Correctly formatted token header
         },
-        'body': JSON.stringify(item),
       });
-      if (res.ok) {
-        const token = await res.text(); // Retrieve the token from the response body
-        const user = {
-          "username": item.username,
-          "token": token
-        }
-        setUser(user);
-       setGoToFeed(true);
+      console.log(token);
+      console.log(response);
+      if (response.status === 404) {
+        return 404; // Or handle 404 specifically if needed
       }
-    else {
-      console.error('Error during login');
-        logout();
-      return;
+      const data = await response.json();
+      console.log(data);
+      return data; // Returns the entire user object
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      throw error; // Rethrowing the error might be necessary for caller to handle
     }
   }
-  
-  
 
-    if (toReg) {
-        return <Navigate to="/register" />;
+  async function handleLogin(e) {
+    e.preventDefault();
+    if (!username || !password) {
+      console.log("Please fill in both username and password.");
+      return; // Exit early if credentials are not provided
     }
 
-    if (goToFeed) {
-        return <Navigate to="/feed" />;
-    }
+    try {
+      const response = await fetch("http://localhost:5000/api/users/tokens", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userName: username, password: password }),
+      });
+      console.log(username);
+      if (!response.ok) {
+        throw new Error(`Login failed: ${response.statusText}`);
+      }
 
-    return (
-        <div className="login-container">
-            <h2>Login</h2>
-            <form onSubmit={handleLogin}>
-                <div className="form-group">
-                    <label htmlFor="username">Username:</label>
-                    <input type="text" id="username" value={username} onChange={e => setUsername(e.target.value)} required />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="password">Password:</label>
-                    <input type="password" id="password" value={password} onChange={e => setPassword(e.target.value)} required />
-                </div>
-                <button className="login_button" type="submit">Login</button>
-            </form>
-            <button className='register_button' onClick={() => setToReg(true)}>Create Fakount</button>
+      const data = await response.json();
+      console.log("Token data:", data); // Log token data
+
+      let user = await getUser(data.user.token); // Fetch user with the token
+      if (!user) {
+        throw new Error("Failed to retrieve user data");
+      }
+
+      let token2 = data.user.token;
+      console.log(token2);
+      let userId2 = user.user._id;
+      console.log(userId2);
+      let username2 = user.user.userName;
+      console.log(token2, userId2, username2);
+      const userDetails = {
+        token: token2,
+        userId: userId2,
+        username: username2,
+      };
+      console.log("User data:", userDetails); // Log user data
+
+      localStorage.setItem("userI", JSON.stringify(userDetails)); // Store user details in localStorage
+
+      console.log("Stored in localStorage:", localStorage.getItem("userI")); // Log what is stored in localStorage
+      toast.success("Login Success");
+      setGoToFeed(true); // Trigger navigation to feed page upon successful login
+    } catch (error) {
+      console.error("Error during login:", error);
+      toast.error("Error during login");
+      logout();
+    }
+  }
+
+  if (toReg) {
+    return <Navigate to="/register" />;
+  }
+
+  if (goToFeed) {
+    return <Navigate to="/feed" />;
+  }
+
+  return (
+    <div className="login-container">
+      <h2>Login</h2>
+      <form onSubmit={handleLogin}>
+        <div className="form-group">
+          <label htmlFor="username">Username:</label>
+          <input
+            type="text"
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
         </div>
-    );
+        <div className="form-group">
+          <label htmlFor="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <button className="login_button" type="submit">
+          Login
+        </button>
+      </form>
+      <button className="register_button" onClick={() => setToReg(true)}>
+        Create Fakount
+      </button>
+    </div>
+  );
 }
 
 export default Login;

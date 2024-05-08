@@ -1,27 +1,32 @@
-import React from 'react'
-import '../css/pagesCss/LoginPage.css'
-import Login from '../inputs/Login'
-import HomePageText from '../decoratives/HomePageText'
-import PageNavigator from './PageNavigator'
-import {useState} from 'react'
+import React from "react";
+import "../css/pagesCss/LoginPage.css";
+import Login from "../inputs/Login";
+import HomePageText from "../decoratives/HomePageText";
+import PageNavigator from "./PageNavigator";
+import { useState } from "react";
 
+export default function LoginPage({
+  isApproveToBrowse,
+  onApproveToBrowse,
+  premissionRef,
+  setUser,
+}) {
+  if (isApproveToBrowse) {
+    return <PageNavigator caller={"LoginPage"} />;
+  }
 
-export default function LoginPage({isApproveToBrowse,onApproveToBrowse,premissionRef}) {
-	const [user, setUser] = useState(null);
-	if(isApproveToBrowse){
-		return(
-		<PageNavigator caller={"LoginPage"}/>
-		)
-	}
-
-	return (
-	<div className='parent'>
-		<div className='right_child'>
-		<HomePageText/>
-		</div>
-		<div className='left_child'>
-		<Login upDateApproval = {onApproveToBrowse} premissionRef={premissionRef} setUser={setUser}></Login>
-		</div>
-		</div>	
-  )
+  return (
+    <div className="parent">
+      <div className="right_child">
+        <HomePageText />
+      </div>
+      <div className="left_child">
+        <Login
+          upDateApproval={onApproveToBrowse}
+          premissionRef={premissionRef}
+          setUser={setUser}
+        ></Login>
+      </div>
+    </div>
+  );
 }
