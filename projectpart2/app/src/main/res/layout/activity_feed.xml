@@ -9,7 +9,7 @@
     android:background="@drawable/gradient_background"
     android:orientation="vertical"
     android:text="@string/app_name"
-    tools:context="com.example.projectpart2.FeedActivity">
+    tools:context="com.example.projectpart2.activities.FeedActivity">
 
 <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/top_feed_layout"

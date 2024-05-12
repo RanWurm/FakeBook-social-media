@@ -7,7 +7,7 @@
     android:background="@drawable/gradient_background"
     android:orientation="vertical"
     android:text="@string/app_name"
-    tools:context="com.example.projectpart2.RegisterActivity">
+    tools:context="com.example.projectpart2.activities.RegisterActivity">
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -82,8 +82,8 @@ letters and digits."
 
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="15dp">
+            android:layout_marginBottom="15dp"
+            android:orientation="horizontal">
 
             <!-- ImageView for displaying the selected image -->
 
@@ -91,12 +91,12 @@ letters and digits."
                 android:id="@+id/btnSelectImage"
                 android:layout_width="240dp"
                 android:layout_height="48dp"
-                android:textSize="16dp"
                 android:layout_gravity="center_vertical"
-                android:textColor="@color/black"
                 android:layout_marginRight="20dp"
                 android:background="@drawable/select_image_button"
-                android:text="@string/select_image" />
+                android:text="@string/select_image"
+                android:textColor="@color/black"
+                android:textSize="16dp" />
 
             <ImageView
                 android:id="@+id/imageViewUpload"
@@ -133,6 +133,20 @@ letters and digits."
 
 
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/imageBackwardsButton"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="108dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/image_button_description"
+        android:src="@drawable/ic_backwards"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:layout_width="wrap_content"

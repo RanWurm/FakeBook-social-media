@@ -3,6 +3,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,29 +13,35 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.projectpart2"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        android:usesCleartextTraffic="true">
         <activity
-            android:name="com.example.projectpart2.EditPostActivity"
+            android:name="com.example.projectpart2.activities.ProfileActivity"
+            android:exported="false"
+            android:label="ProfileActivity"
+            android:theme="@style/Theme.projectpart2"/>
+        <activity
+            android:name="com.example.projectpart2.activities.EditPostActivity"
             android:exported="false"
             android:label="EditPostActivity"
             android:theme="@style/Theme.projectpart2"/>
         <activity
-            android:name="com.example.projectpart2.newPostActivity"
+            android:name="com.example.projectpart2.activities.newPostActivity"
             android:exported="false"
             android:label="newPostActivity"
             android:theme="@style/Theme.projectpart2"/>
         <activity
-            android:name="com.example.projectpart2.FeedActivity"
+            android:name="com.example.projectpart2.activities.FeedActivity"
             android:exported="false"
             android:label="FeedActivity"
             android:theme="@style/Theme.projectpart2"/>
         <activity
-            android:name="com.example.projectpart2.RegisterActivity"
+            android:name="com.example.projectpart2.activities.RegisterActivity"
             android:exported="false"
             android:label="@string/title_activity_register"
             android:theme="@style/Theme.projectpart2" />
         <activity
-            android:name="com.example.projectpart2.MainActivity"
+            android:name="com.example.projectpart2.activities.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.projectpart2">
