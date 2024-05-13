@@ -1,25 +1,15 @@
-const { User, FriendRequest } = require('../models/user');
+const User = require('../models/user.js');
 const jwt = require('jsonwebtoken');
 const userService = require('../services/user.js');
 const key = "133221333123111";
 const postController = require('../controllers/post.js');
 const { ObjectId } = require('mongoose').Types;
 
-function tokenIsValid (token) {
-	try {
-		const dec = jwt.verify(token, key);
-		if (dec !== undefined) {
-			return true;
-		} else {
-			return false;
-		}
-	} catch (error) {
-		return false;
-	}
-}
 
-module.exports.createUser = async (req, res) => {
+module.exports.createUser = async(req, res) => {
+    console.log("in the createUser - controller");
 	try {
+		console.log(req.body);
 		const { userName, password, nickName, profilePicture } = req.body;
 
 		// Check if the username already exists
@@ -35,199 +25,186 @@ module.exports.createUser = async (req, res) => {
 	}
 };
 
-module.exports.login = async (req, res) => {
+module.exports.login = async(req, res) => {
+    console.log("in the login - controller");
 	try {
-		const { userName, password } = req.body;
+        console.log(req.body);
+		const userName = req.body.userName;
+  		const password = req.body.password;
 		const user = await userService.login(userName, password);
 		if (!user) {
 			return res.status(404).json({ error: "Invalid username or password" });
 		}
-		res.status(200).json({ user });
-
+		res.status(200).json(user);
+		
 	} catch (error) {
 		res.status(500).json({ error: "Something went wrong!" });
 	}
 };
 
-module.exports.getUserById = async (req, res) => {
-	const { username } = req.query;
-	try {
-		const user = await userService.getUserById(username);
-		if (user == null) {
-			return res.status(404).json({ error: "User not found!" });
-		}
-		const { username: userName, nickname: nickName, profilepicture: profilePicture, id, token, friendsList } = user;
-		res.status(200).json({ user });
-	} catch (error) {
-		res.status(500).json({ error: "Something went wrong!" });
-	}
+module.exports.getUserById = async(req, res) => {
+    console.log("in the get user by id - controller");
+    const userId = req.params.id;  // Custom numeric ID from the URL
+    const requesterId = req.user.id;  // ID of the authenticated user from JWT
+    console.log("the requested user id: " + userId);
+    console.log("the requesting user id: " + requesterId);
+    try {
+        // Finding user by custom 'id' field and populating friends' details
+        const targetUser = await userService.getUserById(userId);
+        if (!targetUser) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Check if the requester is in the user's friends list by comparing custom 'id' field
+        const isFriend = targetUser.friends.some(friend => friend.id === requesterId);  // Ensure types are compatible
+        const userItself = userService.verifyUser(userId, requesterId);
+        if (!isFriend && !userItself) {
+            return res.status(403).json({ error: "Access denied: user is not a friend" });
+        }
+
+        // Return the user details
+        // const { userName, nickName, profilePicture, id } = targetUser;
+        res.status(200).json(targetUser);
+    } catch (error) {
+        console.error('Error retrieving user:', error);
+        res.status(500).json({ error: "Something went wrong" });
+    }
 };
 
-module.exports.deleteUserById = async (req, res) => {
-	try {
-		const { id: idToDel } = req.params;
-		const { token } = req.body;
-		const user = await userService.deleteUserById(Number(idToDel), token);
-		return res.status(200).json({ msg: "User Deleted", user, id: idToDel });
-	} catch (error) {
-		return res.status(500).json({ error: "Something went wrong!" });
-	}
-};
+module.exports.deleteUserById = async(req, res) => {
+    console.log("in the delete user by id - controller");
+    try {
+        const userIdToDelete = req.params.id;  // Get the user ID from URL parameters
 
+        // Authorization check: Ensure the logged-in user's ID matches the ID in the request
+        if (req.user.id !== userIdToDelete) {
+            return res.status(403).json({ error: "Unauthorized to delete this profile" });
+        }
+
+        // Call the service function to delete the user
+        const deletedUser = await userService.deleteUserById(userIdToDelete);
+
+        if (!deletedUser) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        return res.status(200).json({ message: "User deleted successfully", userId: userIdToDelete });
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
 
 module.exports.getFriendsList = async (req, res) => {
+    console.log("in the get friends list - controller");
+	const userId = req.params.id;
+    const requestorId = req.user.id;
+
+	const isFriend = await userService.areFriends(userId, requestorId);
+    console.log("in the get friends list - controller, user id is: " + userId +
+    "and requestorId is: " + requestorId);
+	const userItself = userService.verifyUser(userId, requestorId);
+
+	if (!isFriend && !userItself) {
+		return res.status(403).json({ message: "Access denied: Requestor is not a friend of the user or the user itself." });
+	}
 	try {
-		const { id } = req.params;
-		const user = await userService.getFriendsList(id);
-		res.status(200).json({ friendList: user.friends });
+		const friendsList = await userService.getFriendsList(userId);
+		res.status(200).json(friendsList);
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
 };
 
-module.exports.getPosts = async (req, res) => {
-	try {
-		res.json('get user post ');
-	} catch (error) {
-		res.json('Error');
-	}
+
+
+module.exports.editUserById = async(req, res) => {
+    console.log("in the edit user by id - controller");
+    try {
+        const userId = req.params.id;  // User ID from the URL parameters
+        const { nickName, profilePicture } = req.body;  // Directly extract expected fields
+
+        // Check if the necessary fields are present
+        if (!nickName || !profilePicture) {
+            return res.status(400).json({ error: "Bad request, missing nickName or profilePicture" });
+        }
+
+        // Authorization check: Ensure the logged-in user's ID matches the ID in the request
+        if (req.user.id !== userId) {
+            return res.status(403).json({ error: "Unauthorized to edit this profile" });
+        }
+
+        // Prepare the data for updating
+        const newData = { nickName, profilePicture };
+
+        // Call the service function to edit the user
+        const updatedUser = await userService.editUserById(userId, newData);
+
+        if (!updatedUser) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        return res.status(200).json({ message: "User updated successfully", user: updatedUser });
+    } catch (error) {
+        console.error('Error editing user:', error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
 };
 
 
-module.exports.editUserById = async (req, res) => {
-	try {
-		const { id } = req.query;
-		const { newData } = req.body;
-		if (!id || !newData) {
-			return res.status(400).json({ error: "Bad request, missing parameters" });
-		}
+module.exports.sendFriendRequest = async(req, res) => {
+    console.log("in the send friend request - controller");
+    try {
+        const userId = req.params.id;
+        const requestorId = req.user.id;
+        
+        await userService.sendFriendRequest(requestorId, userId);
 
-		const updatedUser = await User.findByIdAndUpdate(id, newData, { new: true });
-
-		if (!updatedUser) {
-			return res.status(404).json({ error: "User not found" });
-		}
-
-		return res.status(200).json({ message: "User updated successfully", user: updatedUser });
-	} catch (error) {
-		console.error('Error editing user:', error);
-		return res.status(500).json({ error: "Internal server error" });
-	}
+        res.status(200).json({ message: 'Request sent successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });  // It's good to specify an HTTP status code for errors.
+    }
 };
 
 
-module.exports.sendFriendRequest = async (req, res) => {
-	try {
-		const { senderId, recipientId } = req.params;
-		const sender = await User.findById(senderId);
-		const recipient = await User.findById(recipientId);
+module.exports.approveFriendRequest = async(req, res) => {
+    console.log("in the approve friend request - controller");
+    try {
+        const userId = req.params.id;
+        const approvedId = req.params.fid;
+        const tokenId = req.user.id;
 
-		const existingRequest = recipient.friendRequests.find(
-			(request) => request.sender.toString() === senderId.toString()
-		);
+        // Check if the authenticated user is the recipient of the friend request
+        if (String(userId) !== String(tokenId)) {
+            return res.status(403).json({ error: 'Unauthorized to approve this request' });
+        }
 
-		if (existingRequest) {
-			res.json({ error: 'Friend request already exists' });
-			return;
-		}
+        // Call userService to handle the approval logic
+        await userService.approveFriendRequest(approvedId, userId);
 
-		const newRequest = new FriendRequest({
-			sender: senderId,
-			recipient: recipientId
-		});
-
-		recipient.friendRequests.push(newRequest);
-		await recipient.save();
-
-		res.json({ message: 'Req sent successfully' });
-	} catch (error) {
-		res.json({ error: error.message });
-	}
+        return res.status(200).json({ message: 'Friend request approved successfully' });
+    } catch (error) {
+        console.error('Error approving friend request:', error);
+        return res.status(400).json({ error: error.message });
+    }
 };
 
 
-module.exports.approveFriendRequest = async (req, res) => {
+
+module.exports.deleteFriend = async(req, res) => {
+    console.log("in the delete friend - controller");
 	try {
-		const { recipientId, requestId } = req.params;
-		const recipient = await User.findById(recipientId);
-		const request = recipient.friendRequests.id(requestId);
+		const userId = req.params.id;
+        const friendToDelete = req.params.fid;
+        const tokenId = req.user.id;
 
-		if (!request) {
-			return res.status(404).json({ error: 'Friend request not found' });
-		}
-
-		request.status = 'accepted';
-		recipient.friends.push(request.sender);
-		const sender = await User.findById(request.sender);
-		sender.friends.push(recipientId);
-		recipient.friendRequests.pull(requestId);
-		await recipient.save();
-		await sender.save();
-		return res.status(200).json({ message: 'Friend request approved successfully' });
-	} catch (error) {
-		return res.status(400).json({ error: error.message });
-	}
-};
-
-
-module.exports.denyFriendRequest = async (req, res) => {
-	try {
-		const { recipientId, requestId } = req.params;
-
-		const recipient = await User.findById(recipientId);
-		const request = recipient.friendRequests.id(requestId);
-
-		if (!request) {
-			return res.json({ error: 'Friend request not found' });
-		}
-
-		recipient.friendRequests.pull(requestId);
-		await recipient.save();
-
-		res.json({ message: 'Friend request denied successfully' });
-	} catch (error) {
-		res.json({ error: error.message });
-	}
-};
-
-
-module.exports.deleteFriend = async (req, res) => {
-	try {
-		const { userId, friendId } = req.params;
-		const user = await User.findById(userId);
-		if (!user) {
-			return res.status(404).json({ error: 'User not found' });
-		}
-		user.friends = user.friends.filter(
-			(friend) => String(friend) !== friendId
-		);
-		await user.save();
-		const friend = await User.findById(friendId);
-		if (!friend) {
-			return res.status(404).json({ error: 'Friend not found' });
-		}
-		friend.friends = friend.friends.filter(
-			(friendObj) => String(friendObj) !== userId
-		);
-		await friend.save();
-		return res.status(200).json({ message: 'Friend removed successfully' });
-	} catch (error) {
-		return res.status(400).json({ error: error.message });
-	}
-};
-
-module.exports.getAllUser = async (req, res) => {
-	try {
-		const { excludedUserId } = req.query;
-
-		const query = excludedUserId
-			? { _id: { $ne: excludedUserId } }
-			: {};
-
-		const users = await User.find(query, '-token');
-		res.status(200).json(users);
-	} catch (error) {
-		console.error('Error fetching users:', error);
-		res.status(500).json({ error: 'Internal server error' });
-	}
+		if (String(userId) !== String(tokenId)) {
+            return res.status(403).json({ error: 'Unauthorized to approve this request' });
+        }
+		await userService.deleteFriend(userId, friendToDelete);
+		return res.status(200).json({ message: 'Friend deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting friend:', error);
+        return res.status(400).json({ error: error.message });
+    }
 };

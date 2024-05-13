@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import { useUser } from "../pages/UserContext"; // Ensure this import path is correct
 import "../css/inputsCss/Login.css"; // Confirm the CSS path
 import { toast } from "react-toastify";
+// import { getUserById } from "../../../server/services/user";
 
 function Login({ upDateApproval, premissionRef }) {
   const [username, setUsername] = useState("");
@@ -10,6 +11,7 @@ function Login({ upDateApproval, premissionRef }) {
   const [goToFeed, setGoToFeed] = useState(false);
   const [toReg, setToReg] = useState(false);
   const { setUser, logout } = useUser();
+  let tokenn = 0;
 
   useEffect(() => {
     if (goToFeed) {
@@ -19,19 +21,20 @@ function Login({ upDateApproval, premissionRef }) {
     }
   }, [goToFeed, upDateApproval, premissionRef]);
 
-  async function getUser(token) {
+  async function getUser(id) {
     // Assuming SERVER_ADDRESS and username are provided
-    const SERVER_ADDRESS = `http://localhost:5000/api/users/getUser?username=${username}`; // Update with your actual server address
+    const SERVER_ADDRESS = `http://localhost:5000/api/users/getUser?id=${id}`; // Update with your actual server address
     try {
       const url = `${SERVER_ADDRESS}`;
+      console.log(tokenn);
       const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Correctly formatted token header
+          Authorization: `Bearer ${tokenn}`, // Correctly formatted token header
         },
       });
-      console.log(token);
+      console.log(id);
       console.log(response);
       if (response.status === 404) {
         return 404; // Or handle 404 specifically if needed
@@ -53,29 +56,31 @@ function Login({ upDateApproval, premissionRef }) {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/users/tokens", {
+      const response = await fetch("http://localhost:5000/api/tokens", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userName: username, password: password }),
       });
       console.log(username);
       if (!response.ok) {
+        console.log("Hillel was right");
         throw new Error(`Login failed: ${response.statusText}`);
       }
 
       const data = await response.json();
+      tokenn = data.token;
       console.log("Token data:", data); // Log token data
 
-      let user = await getUser(data.user.token); // Fetch user with the token
+      let user = await getUser(data.id); // Fetch user with the token
       if (!user) {
         throw new Error("Failed to retrieve user data");
       }
 
-      let token2 = data.user.token;
+      let token2 = data.token;
       console.log(token2);
-      let userId2 = user.user._id;
+      let userId2 = user.id;
       console.log(userId2);
-      let username2 = user.user.userName;
+      let username2 = user.userName;
       console.log(token2, userId2, username2);
       const userDetails = {
         token: token2,

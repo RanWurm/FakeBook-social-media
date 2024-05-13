@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const key = "133221333123111";
 
 function authenticate (req, res, next) {
+  console.log("in the authentication");
   const token = req.headers.authorization;
 
   if (!token) {

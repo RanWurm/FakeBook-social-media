@@ -1,24 +1,26 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const Comment = new Schema({
+const commentSchema = new Schema({
 	content: {
 		type: String,
 		required: true
 	}
 });
 
-const Post = new Schema({
+const postSchema = new Schema({
 	postID: {
 		type: Number,
-		default: () => Math.floor(Math.random() * 1000000),
-		unique: true
+		required: true,
+		unique: true, 
+		index: true
 	},
-	author: {
-		type: String,
+	authorID: {
+		type: Number,
 		required: true
 	},
-	profilePicture: {
+	
+	picture: {
 		type: String,
 		required: true
 	},
@@ -34,12 +36,9 @@ const Post = new Schema({
 		type: Number,
 		default: 0
 	},
-	commentCount: {
-		type: Number,
-		default: 0
-	},
-	//the list of comments
-	commentSection: [ Comment ]
+	comments: [ commentSchema ]
 });
 
-module.exports = mongoose.model('Post', Post);
+const Post = mongoose.model('Post', postSchema);
+
+module.exports = Post;

@@ -29,10 +29,12 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef }) {
 
   const fetchPosts = () => {
     const userI = JSON.parse(localStorage.getItem("userI"));
-    fetch(`http://localhost:5000/api/posts/p/${userI.username}`, {
+    console.table(userI);
+    fetch(`http://localhost:5000/api/posts`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${userI.token}`,
+        //we need to get the tokenn from Login.js
+        Authorization: `Bearer ${userI.token}`
       },
     })
       .then((response) => {
