@@ -6,10 +6,12 @@ function authenticate (req, res, next) {
   const token = req.headers.authorization;
 
   if (!token) {
+    console.log("In the if !token");
     return res.status(401).json({ error: "Unauthorized" });
   }
-
+  console.log(token);
   try {
+    console.log("In the try");
     const decoded = jwt.verify(token, key);
     req.user = decoded;
     next();

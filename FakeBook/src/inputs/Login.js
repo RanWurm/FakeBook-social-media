@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import { useUser } from "../pages/UserContext"; // Ensure this import path is correct
 import "../css/inputsCss/Login.css"; // Confirm the CSS path
 import { toast } from "react-toastify";
-// import { getUserById } from "../../../server/services/user";
+// import { getUserById } from "../../../server/controllers/user";
 
 function Login({ upDateApproval, premissionRef }) {
   const [username, setUsername] = useState("");
@@ -23,7 +23,7 @@ function Login({ upDateApproval, premissionRef }) {
 
   async function getUser(id) {
     // Assuming SERVER_ADDRESS and username are provided
-    const SERVER_ADDRESS = `http://localhost:5000/api/users/getUser?id=${id}`; // Update with your actual server address
+    const SERVER_ADDRESS = `http://localhost:5000/api/users/id=${id}`; // Update with your actual server address
     try {
       const url = `${SERVER_ADDRESS}`;
       console.log(tokenn);
@@ -31,7 +31,7 @@ function Login({ upDateApproval, premissionRef }) {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${tokenn}`, // Correctly formatted token header
+          Authorization: `${tokenn}`, // Correctly formatted token header
         },
       });
       console.log(id);
@@ -46,7 +46,7 @@ function Login({ upDateApproval, premissionRef }) {
       console.error("Error fetching user data:", error);
       throw error; // Rethrowing the error might be necessary for caller to handle
     }
-  }
+}
 
   async function handleLogin(e) {
     e.preventDefault();

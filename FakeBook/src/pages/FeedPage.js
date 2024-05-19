@@ -34,10 +34,11 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef }) {
       method: "GET",
       headers: {
         //we need to get the tokenn from Login.js
-        Authorization: `Bearer ${userI.token}`
+        Authorization: `${userI.token}`
       },
     })
       .then((response) => {
+        console.log(userI.token);
         if (response.status === 404) {
           console.log("No posts found, setting posts to empty.");
           setPosts([]); // Set posts to empty if the response is 404
