@@ -49,6 +49,7 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef}) {
       })
       .then((data) => {
         if (data) {
+          console.log(data);
           // Ensure there's data before setting it
           setPosts(data);
         }
@@ -146,19 +147,21 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef}) {
           <div className="left">
             {tposts.length ? (
               tposts.map((post) => (
-                <Post
-                  key={post._id}
-                  postID={post._id}
-                  icon={pic}
-                  author={author}
-                  content={post.content}
-                  date={post.dateCreated}
-                  handleDelete={handleRemovePost}
-                  handleEdit={handlePostEdit}
-                  setPosts={setPosts}
-                  posts={tposts}
-                  isDarkMode={isDarkMode} // Assuming isDarkMode is managed globally or passed as a prop
-                />
+<Post
+  key={post._id}
+  postID={post.postID}
+  icon={pic}
+  author={author}
+  content={post.content}
+  date={post.dateCreated}
+  handleDelete={handleRemovePost}
+  handleEdit={handlePostEdit}
+  setPosts={setPosts}
+  posts={tposts}
+  isDarkMode={isDarkMode}
+  fetchPosts={fetchPosts} // Passing down fetchPosts as a prop
+/>
+
               ))
             ) : (
               <h2 style={{ textAlign: "center" }}>No Posts Yet</h2>

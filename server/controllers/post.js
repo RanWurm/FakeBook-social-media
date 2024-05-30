@@ -77,7 +77,7 @@ module.exports.editPost = async (req, res) => {
     if (!currentPost) {
         return res.status(404).json({ error: "Post not found" });
     }
-    
+
     // Check if critical fields are being updated and if the user is authorized
     if ((currentPost.content !== receivedPost.content) ||
         (currentPost.picture !== receivedPost.picture)) {
@@ -90,7 +90,6 @@ module.exports.editPost = async (req, res) => {
     if (!receivedPost.content || !receivedPost.picture) {
         return res.status(400).json({ error: "Bad request, missing content or picture" });
     }
-
 
     try {
         // Now, attempt to edit the post if the user verification is successful

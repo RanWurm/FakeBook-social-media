@@ -15,9 +15,10 @@ function authenticate (req, res, next) {
     const decoded = jwt.verify(token, key);
     req.user = decoded;
     console.log(decoded); 
+    console.log("line 18 auth");
     next();
   } catch (error) {
-    console.log("auth -> line 19"); 
+    console.log("auth -> line 21"); 
     return res.status(401).json({ error: "Unauthorized" });
   }
 }

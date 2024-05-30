@@ -4,6 +4,7 @@ import "../css/inputsCss/Tab.css";
 import Edit from "../res/edit.png";
 import like_icon from "../res/like.png";
 import golden_like from "../res/golden_like.png";
+import send_button from "../res/send_button.png";
 import Comment from "../res/comment_icon.png";
 import comment_icon from "../res/comment_icon.png";
 import CommentSection from "./CommentSection";
@@ -21,6 +22,7 @@ function Post({
   isDarkMode,
   setPosts,
   tposts,
+  fetchPosts
 }) {
   const [likeCount, setLikeCount] = useState(0);
   const [inputText, setInputText] = useState("");
@@ -65,25 +67,17 @@ function Post({
       redirect: "follow",
     };
 
-    fetch("http://localhost:5000/api/posts/deletePost", requestOptions)
+    fetch(`http://localhost:5000/api/users/${userI.userId}/posts/${postID}`, requestOptions)
       .then((response) => response.text())
       .then((result) => {
+        
         setPosts((prevPosts) => {
-          return prevPosts.filter((post) => post._id !== postID);
+          return prevPosts.filter((post) => post.id !== postID);
         });
+        fetchPosts(); // Call fetchPosts to refresh the posts list
       })
       .catch((error) => console.error(error));
-    // fetch(`http://localhost:3000/api/posts/deletePost`, {
-    //   method: "DELETE",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ id: postID }),
-    // })
-    //   .then((response) => response.json())
-    //   .then(() => {
-    //     console.log("Post deleted successfully");
-    //     // Optionally trigger a refresh of the post list in the parent component here
-    //   })
-    //   .catch((error) => console.error("Error deleting post:", error));
+
   };
 
   const editPost = () => {
@@ -91,45 +85,31 @@ function Post({
     const myHeaders = new Headers();
     myHeaders.append("Authorization", `${userI.token}`);
     myHeaders.append("Content-Type", "application/json");
-
+  
     const raw = JSON.stringify({
       content: editedContent,
       id: postID,
+      picture: icon
     });
-
+  
     const requestOptions = {
-      method: "POST",
+      method: "PATCH",
       headers: myHeaders,
       body: raw,
       redirect: "follow",
     };
-
-    fetch("http://localhost:5000/api/posts/editPost", requestOptions)
+  
+    fetch(`http://localhost:5000/api/users/${userI.userId}/posts/${postID}`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        setPosts((prevPosts) => {
-          return prevPosts.map((post) => {
-            return post._id === postID
-              ? { ...post, content: editedContent }
-              : post;
-          });
-        });
         setIsEditing(false);
+        fetchPosts(); // Call fetchPosts to refresh the posts list
       })
-      .catch((error) => console.error(error));
-
-    // fetch(`http://localhost:3000/api/posts/editPost`, {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ id: postID, content: editedContent }),
-    // })
-    //   .then((response) => response.json())
-    //   .then(() => {
-    //     setIsEditing(false);
-    //     // Optionally refresh the post to show updated content
-    //   })
-    //   .catch((error) => console.error("Error updating post:", error));
+      .catch((error) => {
+        console.error('Error updating post:', error);
+      });
   };
+  
 
   let like = isDarkMode ? golden_like : like_icon;
 
