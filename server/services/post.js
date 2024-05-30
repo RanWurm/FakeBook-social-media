@@ -60,7 +60,7 @@ module.exports.getFeedPosts = async(userId) => {
         if (!user) {
             throw new Error('User not found');
         }
-
+        console.log("services-> post -> line 63");
         const friendIds = user.friends;
         const friendPosts = await Post.find({ authorID: { $in: friendIds } })
                                       .sort({ dateCreated: -1 })
@@ -69,10 +69,12 @@ module.exports.getFeedPosts = async(userId) => {
         const nonFriendPosts = await Post.find({ authorID: { $nin: friendIds } })
                                          .sort({ dateCreated: -1 })
                                          .limit(5);
-
+        console.log("services-> post -> line 72"); 
         return friendPosts.concat(nonFriendPosts);
+
     } catch (error) {
         console.error('Error fetching posts:', error);
         throw error;
     }
+
 };

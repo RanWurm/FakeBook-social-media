@@ -10,6 +10,7 @@ const UserProfile = ({ onApproveToBrowse, premissionRef }) => {
     userName: "",
     password: "",
     nickName: "",
+    picture: ""
   });
   const navigate = useNavigate();
 
@@ -25,7 +26,7 @@ const UserProfile = ({ onApproveToBrowse, premissionRef }) => {
     };
 
     fetch(
-      `http://localhost:5000/api/users/getUser?username=${userI.username}`,
+      `http://localhost:5000/api/users/${userI.userId}`,
       requestOptions
     )
       .then((response) => response.json())
@@ -35,6 +36,7 @@ const UserProfile = ({ onApproveToBrowse, premissionRef }) => {
           userName: result.user.userName,
           password: result.user.password,
           nickName: result.user.nickName,
+          picture:  result.user.picture,
         });
       })
       .catch((error) => console.error(error));

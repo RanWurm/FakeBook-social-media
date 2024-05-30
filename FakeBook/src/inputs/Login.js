@@ -23,10 +23,10 @@ function Login({ upDateApproval, premissionRef }) {
 
   async function getUser(id) {
     // Assuming SERVER_ADDRESS and username are provided
-    const SERVER_ADDRESS = `http://localhost:5000/api/users/id=${id}`; // Update with your actual server address
+    const SERVER_ADDRESS = `http://localhost:5000/api/users/${id}`;
+
     try {
       const url = `${SERVER_ADDRESS}`;
-      console.log(tokenn);
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -34,13 +34,10 @@ function Login({ upDateApproval, premissionRef }) {
           Authorization: `${tokenn}`, // Correctly formatted token header
         },
       });
-      console.log(id);
-      console.log(response);
       if (response.status === 404) {
         return 404; // Or handle 404 specifically if needed
       }
       const data = await response.json();
-      console.log(data);
       return data; // Returns the entire user object
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -61,37 +58,30 @@ function Login({ upDateApproval, premissionRef }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userName: username, password: password }),
       });
-      console.log(username);
       if (!response.ok) {
-        console.log("Hillel was right");
         throw new Error(`Login failed: ${response.statusText}`);
       }
-
       const data = await response.json();
       tokenn = data.token;
-      console.log("Token data:", data); // Log token data
-
+      debugger;
       let user = await getUser(data.id); // Fetch user with the token
       if (!user) {
         throw new Error("Failed to retrieve user data");
       }
 
       let token2 = data.token;
-      console.log(token2);
       let userId2 = user.id;
-      console.log(userId2);
       let username2 = user.userName;
-      console.log(token2, userId2, username2);
+      let profilePicture2 = user.profilePicture
       const userDetails = {
         token: token2,
         userId: userId2,
         username: username2,
+        profilePicture: profilePicture2
       };
+      
       console.log("User data:", userDetails); // Log user data
-
-      localStorage.setItem("userI", JSON.stringify(userDetails)); // Store user details in localStorage
-
-      console.log("Stored in localStorage:", localStorage.getItem("userI")); // Log what is stored in localStorage
+      localStorage.setItem("userI", JSON.stringify(userDetails)); // Store user details in localStorag
       toast.success("Login Success");
       setGoToFeed(true); // Trigger navigation to feed page upon successful login
     } catch (error) {

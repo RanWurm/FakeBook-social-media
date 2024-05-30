@@ -190,7 +190,6 @@ module.exports.approveFriendRequest = async(req, res) => {
 };
 
 
-
 module.exports.deleteFriend = async(req, res) => {
     console.log("in the delete friend - controller");
 	try {
@@ -207,4 +206,5 @@ module.exports.deleteFriend = async(req, res) => {
         console.error('Error deleting friend:', error);
         return res.status(400).json({ error: error.message });
     }
+    
 };

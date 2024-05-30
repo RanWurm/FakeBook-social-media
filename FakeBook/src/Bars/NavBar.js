@@ -3,7 +3,7 @@ import "../css/BarsCss/NavBar.css";
 import GoldenIcon from "../res/goldenFacebook.png";
 import FakeBook from "../res/facebook.png";
 import { Link, useNavigate } from "react-router-dom";
-export default function NavBar({ firstHandleClick, darkMode, toggleDarkMode }) {
+export default function NavBar({ firstHandleClick, secondHandleClick ,darkMode}) {
   let logoToUse = darkMode ? GoldenIcon : FakeBook;
   const navigate = useNavigate();
 
@@ -28,7 +28,7 @@ export default function NavBar({ firstHandleClick, darkMode, toggleDarkMode }) {
         <button className="button" onClick={() => navigate("/user-profile")}>
           Profile
         </button>
-        <button className="button" onClick={toggleDarkMode}>
+        <button className="button" onClick={secondHandleClick}>
           Dark Mode
         </button>
         <button className="button" onClick={firstHandleClick}>

@@ -88,7 +88,6 @@ function Post({
 
   const editPost = () => {
     const userI = JSON.parse(localStorage.getItem("userI"));
-
     const myHeaders = new Headers();
     myHeaders.append("Authorization", `${userI.token}`);
     myHeaders.append("Content-Type", "application/json");

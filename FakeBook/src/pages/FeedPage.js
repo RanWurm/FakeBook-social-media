@@ -3,9 +3,9 @@ import "../css/pagesCss/FeedPage.css";
 import NavBar from "../Bars/NavBar";
 import Post from "../inputs/Post";
 import PageNavigator from "./PageNavigator";
-import { useUser } from "../pages/UserContext";
 
-function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef }) {
+
+function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef}) {
   // const { user, logOut } = useUser();
   const [tposts, setPosts] = useState([]);
   const [inputText, setInputText] = useState("");
@@ -18,7 +18,7 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef }) {
   const handlePostEdit = (id, newContent) => {
     // Define what happens when a post is edited
   };
-
+  
   useEffect(() => {
     if (logOut) {
       onApproveToBrowse(false);
@@ -29,8 +29,7 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef }) {
 
   const fetchPosts = () => {
     const userI = JSON.parse(localStorage.getItem("userI"));
-    console.table(userI);
-    fetch(`http://localhost:5000/api/posts`, {
+    fetch(`http://localhost:5000/api/users/${userI.userId}/posts`, {
       method: "GET",
       headers: {
         //we need to get the tokenn from Login.js
@@ -38,7 +37,6 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef }) {
       },
     })
       .then((response) => {
-        console.log(userI.token);
         if (response.status === 404) {
           console.log("No posts found, setting posts to empty.");
           setPosts([]); // Set posts to empty if the response is 404
@@ -70,9 +68,9 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef }) {
       myHeaders.append("Content-Type", "application/json");
 
       const raw = JSON.stringify({
-        author: userI.username,
-        profilePicture:
-          "https://images.pexels.com/photos/1759531/pexels-photo-1759531.jpeg?auto=compress&cs=tinysrgb&w=600",
+        authorID: userI.userId,
+        picture:
+          userI.profilePicture,
         content: inputText,
       });
 
@@ -82,33 +80,28 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef }) {
         body: raw,
         redirect: "follow",
       };
+      console.log(userI.userId);
 
-      fetch("http://localhost:5000/api/posts/createPost", requestOptions)
-        .then((response) => response.json())
-        .then((result) => {
-          setPosts([result, ...tposts]);
-          setInputText("");
-        })
-        .catch((error) => console.error(error));
-
-      //   fetch(http://localhost:5000/api/posts/createPost, {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       Authorization: Bearer ${userI.token},
-      //     },
-      //     body: JSON.stringify(newPost),
-      //   })
-      //     .then((response) => response.json())
-      //     .then((post) => {
-      //       console.log(post);
-      //       //   setPosts([post, ...tposts]);
-      //       //   setInputText("");
-      //     })
-      //     .catch((error) => console.error("Error creating post:", error));
+      fetch(`http://localhost:5000/api/users/${userI.userId}/posts`, requestOptions)
+    .then((response) => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then((result) => {
+        setPosts([result, ...tposts]); // Updates the list of posts to include the new post at the top
+        setInputText(""); // Clears the input field after successful post creation
+    })
+    .catch((error) => {
+        console.error('Error creating post:', error);
+        // Optionally, update UI to show error message or notification to the user
+    });
     }
   };
-
+  const handleDarkModeClick = () =>{
+    setIsDarkMode(!isDarkMode);
+  }
   const handleLogOut = () => {
     setLogOut(true);
     onApproveToBrowse(false);
@@ -124,9 +117,12 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef }) {
   if (!isApproveToBorwse) {
     return <PageNavigator caller={"FeedPage"} />;
   }
+  const userI = JSON.parse(localStorage.getItem("userI"));
+  let author = userI ? `${userI.username}` : '';
+  let pic = userI ? `${userI.profilePicture}` : '';
   return (
     <div className={`app-container ${isDarkMode ? "dark-mode" : ""}`}>
-      <NavBar firstHandleClick={handleLogOut} />
+      <NavBar firstHandleClick={handleLogOut} secondHandleClick={handleDarkModeClick} darkMode={isDarkMode}/>
       <div className="float-parent-element">
         <div className="float-child-element">
           <div className="right">
@@ -153,8 +149,8 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef }) {
                 <Post
                   key={post._id}
                   postID={post._id}
-                  icon={post.profilePicture}
-                  author={post.author}
+                  icon={pic}
+                  author={author}
                   content={post.content}
                   date={post.dateCreated}
                   handleDelete={handleRemovePost}
