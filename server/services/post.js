@@ -15,13 +15,14 @@ module.exports.getUserPosts = async (userId) => {
     }
 };
 
-module.exports.createPost = async (authorID, picture, content) => {
+module.exports.createPost = async (authorID, authorName,picture, content) => {
     console.log("in the create post - services");
     const largestId = await Post.findOne().sort({postID: -1}).limit(1).select('postID');
 	const postID = largestId ? largestId.postID + 1 : 1;
     const newPost = new Post({
          postID: postID,
          authorID: authorID, 
+         author: authorName,
          picture: picture, 
          content: content 
         });

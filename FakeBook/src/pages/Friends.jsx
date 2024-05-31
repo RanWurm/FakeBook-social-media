@@ -5,72 +5,106 @@ import FriendsRequests from "../components/FriendsRequests";
 import MyFriends from "../components/MyFriends";
 import "../css/styles/friendsStyles.css";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Friends = ({ onApproveToBrowse, premissionRef }) => {
-  const [logOut, setLogOut] = useState(false);
   const [users, setUsers] = useState([]);
   const [userFriends, setUserFriends] = useState([]);
   const [showUsers, setShowUsers] = useState(true);
   const [showMyFriends, setShowMyFriends] = useState(false);
   const [showFriendRequests, setShowFriendRequests] = useState(false);
+  const [friendRequests,setFriendRequests] = useState([]);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (logOut) {
-      onApproveToBrowse(false);
-      premissionRef.current = false;
+  
+ 
+  async function getUser() {
+    const userI = JSON.parse(localStorage.getItem("userI"));
+      try {
+        const response = await fetch(`http://localhost:5000/api/users/${userI.userId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `${userI.token}`, // Correctly formatted token header
+          },
+        });
+        if (response.status === 404) {
+          return 404; // Or handle 404 specifically if needed
+        }
+        const data = await response.json();
+        return data; // Returns the entire user object
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        throw error; // Rethrowing the error might be necessary for caller to handle
+      }
+  }
+  
+  
+  
+  
+  const handleFetchFriendRequests = async () => {
+    try {
+      const user = await getUser(); // Correctly waiting for the user data
+      if (!user) {
+        throw new Error("Failed to get user!");
+      }
+      setFriendRequests(user.friendRequests); // Ensure the field name matches your schema
+      console.log(user.friendRequests);
+    } catch (error) {
+      console.error("Error fetching friend requests:", error);
+      toast.error("Failed to fetch friend requests.");
     }
-  }, []);
+  };
+  
+  
+  useEffect(() => {
+    debugger;
+    const userI = JSON.parse(localStorage.getItem("userI"));
+    if (!userI || !userI.token) {
+      // Handle unauthenticated session or expired token
+      toast.error("Session expired. Please log in again.");
+      navigate("/");
+    } else{
+      handleFetchFriendRequests();
+    }
+  }, []); // Dependencies should include any props/state if they influence data fetching
 
   const handleLogOut = () => {
-    setLogOut(true);
     onApproveToBrowse(false);
     premissionRef.current = false;
     navigate("/");
     // Redirect or perform additional cleanup
   };
 
-  // GET all users from database and set state of users as an array
   const getAllUsers = () => {
     const userI = JSON.parse(localStorage.getItem("userI"));
-    const requestOptions = {
+    fetch(`http://localhost:5000/api/users/getAllUser?excludedUserId=${userI.userId}`, {
       method: "GET",
       redirect: "follow",
-    };
-
-    fetch(
-      `http://localhost:5000/api/users/getAllUser?excludedUserId=${userI.userId}`,
-      requestOptions
-    )
-      .then((response) => response.json())
-      .then((result) => setUsers(result))
-      .catch((error) => {
-        setUsers([]);
-        console.error(error);
-      });
+    })
+    .then(response => response.json())
+    .then(result => setUsers(result))
+    .catch(error => {
+      console.error("Failed to fetch users:", error);
+      toast.error("Failed to fetch users.");
+      setUsers([]);
+    });
   };
-  useEffect(() => {
-    getAllUsers();
-    getUserFriendsList();
-  }, []);
 
   const getUserFriendsList = () => {
     const userI = JSON.parse(localStorage.getItem("userI"));
-    const requestOptions = {
+    fetch(`http://localhost:5000/api/users/${userI.userId}/friends`, {
       method: "GET",
       redirect: "follow",
-    };
-
-    fetch(
-      `http://localhost:5000/api/users/${userI.userId}/friends`,
-      requestOptions
-    )
-      .then((response) => response.json())
-      .then((result) => setUserFriends(result.friendList))
-      .catch((error) => setUserFriends([]));
+    })
+    .then(response => response.json())
+    .then(result => setUserFriends(result.friendList))
+    .catch(error => {
+      console.error("Failed to fetch friends list:", error);
+      toast.error("Failed to fetch friends list.");
+      setUserFriends([]);
+    });
   };
 
-  // Sort fo filter so user can check there friend/add friends/delete friends
   const showUsersHandler = () => {
     setShowUsers(true);
     setShowMyFriends(false);
@@ -92,34 +126,16 @@ const Friends = ({ onApproveToBrowse, premissionRef }) => {
       <NavBar firstHandleClick={handleLogOut} />
       <div className="addUsersContainer">
         <div className="usersFilter">
-          <button onClick={showUsersHandler}>Add Friends</button>
           <button onClick={showRequestsHandler}>Friend Requests</button>
-          <button onClick={showFriendsHandler}>Friends</button>
+
         </div>
         <div>
-          {showUsers ? (
-            users.length ? (
-              <div className="allUsers">
-                {users.map((user) => (
-                  <UserCard
-                    getUserFriendsList={getUserFriendsList}
-                    key={user._id}
-                    user={user}
-                  />
-                ))}
-              </div>
-            ) : (
-              <h2>No Friends To Add</h2>
-            )
-          ) : null}
+        {showFriendRequests && (
+    <FriendsRequests
+        users={friendRequests}  // Changed from `friendsRequest` to `friendRequests`
+    />
+)}
 
-          {showFriendRequests && (
-            <FriendsRequests
-              users={users}
-              getUsers={getAllUsers}
-              getUserFriendsList={getUserFriendsList}
-            />
-          )}
           {showMyFriends && (
             <MyFriends
               getUsers={getAllUsers}

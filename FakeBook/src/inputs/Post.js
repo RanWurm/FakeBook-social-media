@@ -35,10 +35,10 @@ function Post({
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(content);
   const navigate = useNavigate();
-  
   const handleAvatarClick = () => {
-    navigate(`/posts/${authorId}`);  // Use the authorId from the post props to navigate
+    navigate(`/posts/${authorId}`, { state: { postID, author, authorId, icon, content, date } });
   };
+  
   const handleShowPost = () => {
     setShowPosts(!showPosts);
   };

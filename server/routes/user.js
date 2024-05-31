@@ -44,7 +44,7 @@ router.route('/:id/friends/:fid').patch(authenticate, userController.approveFrie
 router.route('/:id/friends/:fid').delete(authenticate, userController.deleteFriend); 
 
 // Assuming this is inside router.js or a similar file where you set up your routes
-router.get('/users/:userId/posts-or-details', authenticate, userController.getPostsOrDetails);
+router.get('/users/:id/posts-or-details', authenticate, userController.getPostsOrDetails);
 
 
 module.exports = router;

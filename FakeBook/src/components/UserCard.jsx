@@ -1,55 +1,18 @@
 import { toast } from "react-toastify";
 
-const UserCard = ({ user, getUserFriendsList }) => {
-  const sendFriendRequest = async () => {
-    const userI = JSON.parse(localStorage.getItem("userI"));
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", `${userI.token}`);
-    myHeaders.append("Content-Type", "application/json");
-
-    // Check if the users are already friends
-    const areFriends = user.friends.some((friend) => friend === user._id);
-
-    if (areFriends) {
-      toast.info("You are already friends");
-      return;
-    }
-
-    const raw = JSON.stringify({
-      senderId: `${userI.userId}`,
-      recipientId: `${user._id}`,
-    });
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow",
-    };
-
-    fetch(
-      `http://localhost:5000/api/users/${userI.userId}/sendFriendRequest/${user._id}`,
-      requestOptions
-    )
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.message) {
-          console.log(result);
-          toast.success("Friend Request Sent");
-          getUserFriendsList();
-        } else if (result.error) {
-          toast.error(result.error);
-        }
-      })
-      .catch((error) => toast.error("Friend Request Pending"));
-  };
+const UserCard = ({ user, acceptFriendRequest, denyFriendRequest }) => {
+  const userI = JSON.parse(localStorage.getItem("userI"));
 
   return (
     <div className="userCardContainer">
-      <img src={user.profilePicture} alt="" />
+      <img src={user.profilePicture} alt="" width={60} height={60} />
       <h2>{user.userName}</h2>
-      <div>
-        <button className="addFriendBtn" onClick={sendFriendRequest}>
-          Add Friend
+      <div className="acceptReject">
+        <button onClick={() => acceptFriendRequest(userI.id, user.id)}>
+          Accept
+        </button>
+        <button onClick={() => denyFriendRequest(userI.id, user.id)}>
+          Deny
         </button>
       </div>
     </div>

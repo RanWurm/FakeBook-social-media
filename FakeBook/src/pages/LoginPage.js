@@ -9,7 +9,6 @@ export default function LoginPage({
   isApproveToBrowse,
   onApproveToBrowse,
   premissionRef,
-  setUser,
 }) {
   if (isApproveToBrowse) {
     return <PageNavigator caller={"LoginPage"} />;
@@ -24,7 +23,6 @@ export default function LoginPage({
         <Login
           upDateApproval={onApproveToBrowse}
           premissionRef={premissionRef}
-          setUser={setUser}
         ></Login>
       </div>
     </div>

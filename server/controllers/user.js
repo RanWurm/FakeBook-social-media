@@ -156,7 +156,9 @@ module.exports.editUserById = async(req, res) => {
 
 
 module.exports.sendFriendRequest = async(req, res) => {
+    console.log(req.params);
     console.log("in the send friend request - controller");
+    console.log(req);
     try {
         const userId = req.params.id;
         const requestorId = req.user.id;
@@ -215,8 +217,9 @@ module.exports.deleteFriend = async(req, res) => {
 exports.getPostsOrDetails = async (req, res) => {
     const { userId } = req.params; // ID of the user whose data is requested
     const requesterId = req.user.id; // ID of the user making the request, extracted from JWT
-
+    console.log( "in user controllers getPostsOrDetails line 218");
     try {
+        console.log( "in user controllers getPostsOrDetails line 220");
         // Fetch both users from the database
         const user = await User.findOne({ id: userId });
         const requester = await User.findOne({ id: requesterId });
@@ -224,24 +227,28 @@ exports.getPostsOrDetails = async (req, res) => {
         if (!user || !requester) {
             return res.status(404).json({ message: "User not found." });
         }
-
+        console.log( "in user controllers getPostsOrDetails line 228");
         // Check if the requester's ID is in the user's friends list
         const areFriends = user.friends.includes(parseInt(requesterId));
-
+        console.log( "in user controllers getPostsOrDetails line 231");
         if (areFriends) {
+            console.log( "in user controllers getPostsOrDetails line 233");
             // If they are friends, fetch and return posts
             const posts = await Post.find({ authorID: userId });
             res.json(posts);
         } else {
+            console.log( "in user controllers getPostsOrDetails line 238");
             // If they are not friends, return user details
             const userDetails = {
                 userName: user.userName,
                 nickName: user.nickName,
                 profilePicture: user.profilePicture
             };
+            console.log( "in user controllers getPostsOrDetails line 245");
             res.json(userDetails);
         }
     } catch (error) {
+        console.log( "in user controllers getPostsOrDetails line 249");
         console.error('Error fetching data:', error);
         res.status(500).json({ error: "Internal server error" });
     }

@@ -43,22 +43,24 @@ module.exports.getUserPosts = async (req, res) => {
 
 module.exports.createPost = async (req, res) => {
     console.log("in create post controller");
-    console.log(req.body);
     const userIdFromParams = req.params.id;
-    const { picture, content } = req.body;
+    const { author , picture , content } = req.body;
     console.log("userIdFromParams: " + userIdFromParams);
     console.log("userId from token: " + req.user.id);
-
-    if (!picture || !content) {
+    console.log(req.body);
+    if (!picture || !content || !author ) {
+        console.log("line54 " + picture +" " + content+ " " + author);
         return res.status(400).json({ error: "Bad request, missing parameters" });
     }
 
     if (String(req.user.id) !== String(userIdFromParams)) {
+        console.log("line59");
         return res.status(403).json({ error: "Unauthorized to create post for another user" });
     }
 
     try {
-        const savedPost = await postServices.createPost(userIdFromParams, picture, content);
+        console.log("line 64 in the try");
+        const savedPost = await postServices.createPost(userIdFromParams, author, picture, content);
         res.status(201).json(savedPost);
     } catch (error) {
         console.error('Error creating post:', error);

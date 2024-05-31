@@ -70,7 +70,7 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef}) {
       const raw = JSON.stringify({
         authorID: userI.userId,
         author: userI.username,
-        pcture:userI.profilePicture,
+        picture:userI.profilePicture,
         content: inputText,
       });
 
@@ -149,7 +149,7 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef}) {
   postID={post.postID}
   icon={post.picture}
   authorId={post.authorID}
-  author={author}
+  author={post.author}
   content={post.content}
   date={post.dateCreated}
   handleDelete={handleRemovePost}

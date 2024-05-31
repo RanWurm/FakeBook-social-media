@@ -1,96 +1,47 @@
 import { toast } from "react-toastify";
+import UserCard from './UserCard';
 
-const FriendsRequests = ({ users, getUsers, getUserFriendsList }) => {
+const FriendsRequests = ({ users }) => {
   const userI = JSON.parse(localStorage.getItem("userI"));
 
-  const acceptFriendRequest = (recipientId, requestId) => {
+  const handleFriendRequestAction = (action, userId, requestId) => {
     const myHeaders = new Headers();
     myHeaders.append("Authorization", `${userI.token}`);
+    const method = action === 'accept' ? 'PATCH' : 'DELETE';
+    const body = action === 'accept' ? JSON.stringify({ action: "accept" }) : null;
 
     const requestOptions = {
-      method: "PATCH",
+      method,
       headers: myHeaders,
+      body,
       redirect: "follow",
     };
 
-    fetch(
-      `http://localhost:5000/api/users/${recipientId}/friends/${requestId}`,
-      requestOptions
-    )
-      .then((response) => response.json())
-      .then((result) => {
+    const url = `http://localhost:5000/api/users/${userId}/${action === 'accept' ? 'acceptFriend' : 'denyFriend'}/${requestId}`;
+
+    fetch(url, requestOptions)
+      .then(response => response.json())
+      .then(result => {
         console.log(result);
-        toast.success("Friend Request Approved");
-        getUsers();
-        getUserFriendsList();
+        toast.success(`Friend request ${action === 'accept' ? 'accepted' : 'denied'}.`);
+        // You might need to update the local state here to reflect changes
       })
-      .catch((error) => toast.error(error));
+      .catch(error => toast.error(`Failed to ${action} friend request.`));
   };
 
-  const denyFriendRequest = (recipientId, requestId) => {
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", `${userI.token}`);
+  const acceptFriendRequest = (userId, requestId) => handleFriendRequestAction('accept', userId, requestId);
+  const denyFriendRequest = (userId, requestId) => handleFriendRequestAction('deny', userId, requestId);
 
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-
-    fetch(
-      `http://localhost:5000/api/users/${recipientId}/friends/${requestId}`,
-      requestOptions
-    )
-      .then((response) => response.text())
-      .then((result) => {
-        console.log(result);
-        getUsers();
-        getUserFriendsList();
-      })
-      .catch((error) => console.error(error));
-  };
-
-  const renderRequests = users
-    .flatMap((user) =>
-      user.friendRequests.map((request) => ({
-        ...request,
-        userName: user.userName,
-        profilePicture: user.profilePicture,
-      }))
-    )
-    .filter(
-      (request) =>
-        request.recipient === userI.userId || request.sender === userI.userId
-    )
-    .map((request) => (
-      <div key={request._id} className="requestContainer">
-        <div className="userCardContainer">
-          <img src={request.profilePicture} alt="" width={60} height={60} />
-          <h2>{request.userName}</h2>
-          <div className="acceptReject">
-            <button
-              onClick={() =>
-                acceptFriendRequest(request.recipient, request._id)
-              }
-            >
-              Accept
-            </button>
-            <button
-              onClick={() => denyFriendRequest(request.recipient, request._id)}
-            >
-              Deny
-            </button>
-          </div>
-        </div>
-      </div>
-    ));
-
-  const noRequestsMessage =
-    renderRequests.length === 0 ? <div>No friends Pending</div> : null;
+  // Ensure users is always treated as an array
+  const safeUsers = Array.isArray(users) ? users : [];
+  const renderRequests = safeUsers.map(user => (
+    <UserCard key={user.id} user={user} acceptFriendRequest={acceptFriendRequest} denyFriendRequest={denyFriendRequest} />
+));
+  const noRequestsMessage = renderRequests.length === 0 ? <div>No friends Pending</div> : null;
 
   return (
     <div>
-      <h2>FriendsRequests</h2>
+      <h2>Friends Requests</h2>
       {noRequestsMessage}
       <div className="allUsers">{renderRequests}</div>
     </div>
