@@ -29,7 +29,7 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef}) {
 
   const fetchPosts = () => {
     const userI = JSON.parse(localStorage.getItem("userI"));
-    fetch(`http://localhost:5000/api/users/${userI.userId}/posts`, {
+    fetch(`http://localhost:5000/api/posts`, {
       method: "GET",
       headers: {
         //we need to get the tokenn from Login.js
@@ -49,7 +49,6 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef}) {
       })
       .then((data) => {
         if (data) {
-          console.log(data);
           // Ensure there's data before setting it
           setPosts(data);
         }
@@ -70,8 +69,8 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef}) {
 
       const raw = JSON.stringify({
         authorID: userI.userId,
-        picture:
-          userI.profilePicture,
+        author: userI.username,
+        pcture:userI.profilePicture,
         content: inputText,
       });
 
@@ -81,8 +80,6 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef}) {
         body: raw,
         redirect: "follow",
       };
-      console.log(userI.userId);
-
       fetch(`http://localhost:5000/api/users/${userI.userId}/posts`, requestOptions)
     .then((response) => {
         if (!response.ok) {
@@ -150,7 +147,8 @@ function FeedPage({ isApproveToBorwse, onApproveToBrowse, premissionRef}) {
 <Post
   key={post._id}
   postID={post.postID}
-  icon={pic}
+  icon={post.picture}
+  authorId={post.authorID}
   author={author}
   content={post.content}
   date={post.dateCreated}

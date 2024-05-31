@@ -15,6 +15,10 @@ const postSchema = new Schema({
 		unique: true, 
 		index: true
 	},
+	author:{
+		type: String,
+		required: true
+	},
 	authorID: {
 		type: Number,
 		required: true

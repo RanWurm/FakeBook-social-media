@@ -10,7 +10,7 @@ function Register() {
   const [confirmedPassword, setConfirmedPassword] = useState("");
   const [isValid, setIsValid] = useState(true);
   const [usersList, addUserToList] = useState([]);
-  const [userImage, setUserImage] = useState(null);
+  const [userImage, setUserImage] = useState("");
   const [approveRegister, setApproveRegister] = useState(false);
   let errors = [
     "User Name Invalid",
@@ -20,57 +20,29 @@ function Register() {
     "Image Required!",
   ];
   const [reasonForFail, setReasonForFail] = useState(null);
-  // const handleRegister = ()=>{
-  // const user = {
-  // 	"userName": {username},
-  // 	"passWord": {password},
-  //   "nickName": {nickName},
-  //   "image":    {userImage}
-  // 	}
-  // addUserToList([...usersList,user]);
-  // }
-
   const processFileInput = (event) => {
-    const selectedFile = event.target.files[0];
-    const fileURL = URL.createObjectURL(selectedFile);
+    const file = event.target.files[0];
+    const reader = new FileReader();
 
-    const fileReader = new FileReader();
-
-    fileReader.onload = function (event) {
-      const binaryData = Array.from(new Uint8Array(event.target.result))
-        .map((byteUnit) => String.fromCharCode(byteUnit))
-        .join("");
-
-      // Encoding binary data to Base64
-      setUserImage(window.btoa(binaryData));
-      // Continue with the use of encodedImage as needed
+    reader.onload = () => {
+        setUserImage(reader.result);
+        // Pass imageSrc as an argument to onChange function
     };
 
-    fileReader.readAsArrayBuffer(selectedFile);
+    if (file) {
+        reader.readAsDataURL(file);
+    }
   };
 
   async function createUser() {
-    // let base64Image = null; // Initialize base64Image
-    // console.log("Shalome2", userImage);
-    // const reader = new FileReader();
-
-    // reader.onload = function (userImage) {
-    //   const binaryString = Array.from(new Uint8Array(userImage.target.result))
-    //     .map((byte) => String.fromCharCode(byte))
-    //     .join("");
-    //   console.log("Shalom3", binaryString);
-    //   // Convert binary string to Base64
-    //   base64Image = btoa(binaryString);
-    // };
-    // console.log(base64Image + "Shalom");
     const formData = {
       userName: username,
       password,
       nickName,
       confirmedPassword,
-      profilePicture:
-        "https://images.pexels.com/photos/1759531/pexels-photo-1759531.jpeg?auto=compress&cs=tinysrgb&w=600",
+      profilePicture:userImage
     };
+    console.log(formData);
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
@@ -140,7 +112,7 @@ function Register() {
     setPassword("");
     setConfirmedPassword("");
     setNickName("");
-    setUserImage(null);
+    setUserImage("");
   };
 
   return (

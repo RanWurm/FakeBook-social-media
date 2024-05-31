@@ -77,7 +77,7 @@ module.exports.deleteUserById = async(req, res) => {
         const userIdToDelete = req.params.id;  // Get the user ID from URL parameters
 
         // Authorization check: Ensure the logged-in user's ID matches the ID in the request
-        if (req.user.id !== userIdToDelete) {
+        if (String(req.user.id) !== String(userIdToDelete)) {
             return res.status(403).json({ error: "Unauthorized to delete this profile" });
         }
 
@@ -120,22 +120,25 @@ module.exports.getFriendsList = async (req, res) => {
 
 module.exports.editUserById = async(req, res) => {
     console.log("in the edit user by id - controller");
+
     try {
         const userId = req.params.id;  // User ID from the URL parameters
-        const { nickName, profilePicture } = req.body;  // Directly extract expected fields
+        console.log("user id from params: " + userId);
+        console.log("user id from token: " + req.user.id);
+        const { nickName, profilePicture,password } = req.body;  // Directly extract expected fields
 
         // Check if the necessary fields are present
-        if (!nickName || !profilePicture) {
+        if (!nickName || !profilePicture|| !password) {
             return res.status(400).json({ error: "Bad request, missing nickName or profilePicture" });
         }
 
         // Authorization check: Ensure the logged-in user's ID matches the ID in the request
-        if (req.user.id !== userId) {
+        if (String(req.user.id) !== String(userId)) {
             return res.status(403).json({ error: "Unauthorized to edit this profile" });
         }
 
         // Prepare the data for updating
-        const newData = { nickName, profilePicture };
+        const newData = { nickName, profilePicture,password };
 
         // Call the service function to edit the user
         const updatedUser = await userService.editUserById(userId, newData);
@@ -207,4 +210,39 @@ module.exports.deleteFriend = async(req, res) => {
         return res.status(400).json({ error: error.message });
     }
     
+};
+
+exports.getPostsOrDetails = async (req, res) => {
+    const { userId } = req.params; // ID of the user whose data is requested
+    const requesterId = req.user.id; // ID of the user making the request, extracted from JWT
+
+    try {
+        // Fetch both users from the database
+        const user = await User.findOne({ id: userId });
+        const requester = await User.findOne({ id: requesterId });
+
+        if (!user || !requester) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        // Check if the requester's ID is in the user's friends list
+        const areFriends = user.friends.includes(parseInt(requesterId));
+
+        if (areFriends) {
+            // If they are friends, fetch and return posts
+            const posts = await Post.find({ authorID: userId });
+            res.json(posts);
+        } else {
+            // If they are not friends, return user details
+            const userDetails = {
+                userName: user.userName,
+                nickName: user.nickName,
+                profilePicture: user.profilePicture
+            };
+            res.json(userDetails);
+        }
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        res.status(500).json({ error: "Internal server error" });
+    }
 };

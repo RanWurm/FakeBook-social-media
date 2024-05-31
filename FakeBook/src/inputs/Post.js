@@ -12,10 +12,14 @@ import Send from "../res/send_button.png";
 import TrashCan from "../res/garbage.png";
 import "../css/buttonsCss/Button.css";
 import { format } from "date-fns";
+import PostPage from "../pages/postPage";
+import { Link, useNavigate } from "react-router-dom";
+
 
 function Post({
   postID,
   author,
+  authorId,
   icon,
   content,
   date,
@@ -30,7 +34,11 @@ function Post({
   const [showPosts, setShowPosts] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(content);
-
+  const navigate = useNavigate();
+  
+  const handleAvatarClick = () => {
+    navigate(`/posts/${authorId}`);  // Use the authorId from the post props to navigate
+  };
   const handleShowPost = () => {
     setShowPosts(!showPosts);
   };
@@ -116,7 +124,9 @@ function Post({
   return (
     <div key={postID} className={`post ${isDarkMode ? "dark-mode" : ""}`}>
       <div className="post-header">
-        <img className="avatar" src={icon} alt={`${author}'s avatar`} />
+      <button className="" onClick={handleAvatarClick}>
+  <img className="avatar" src={icon} alt={`${author}'s avatar`} />
+</button>
         <div className="author-name">{author}</div>
         <div className="post-buttons-bar">
           <div className="post_right_col">

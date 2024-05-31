@@ -5,7 +5,7 @@ import "../css/inputsCss/Login.css"; // Confirm the CSS path
 import { toast } from "react-toastify";
 // import { getUserById } from "../../../server/controllers/user";
 
-function Login({ upDateApproval, premissionRef }) {
+function Login({ upDateApproval, premissionRef,userToSet}) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [goToFeed, setGoToFeed] = useState(false);
@@ -79,11 +79,15 @@ function Login({ upDateApproval, premissionRef }) {
         username: username2,
         profilePicture: profilePicture2
       };
-      
-      console.log("User data:", userDetails); // Log user data
+      const userToSet = {
+        userId: userId2,
+        username: username2,
+        profilePicture: profilePicture2
+      };
       localStorage.setItem("userI", JSON.stringify(userDetails)); // Store user details in localStorag
       toast.success("Login Success");
       setGoToFeed(true); // Trigger navigation to feed page upon successful login
+      userToSet(userToSet);
     } catch (error) {
       console.error("Error during login:", error);
       toast.error("Error during login");

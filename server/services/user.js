@@ -80,10 +80,10 @@ module.exports.editUserById = async (userId, newData) => {
 	};
 
 
-module.exports.deleteUserById = async (idToDel, token) => {
+module.exports.deleteUserById = async (idToDel) => {
 		console.log("in the delete user by id - services");
 		try {
-			const userToDel = await User.findOneAndDelete({id: idToDel, token});
+			const userToDel = await User.findOneAndDelete({id: idToDel});
 			return userToDel;
 		} catch (error) {
 			console.error("Error deleting user by ID:", error);

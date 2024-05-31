@@ -10,13 +10,14 @@ const UserProfile = ({ onApproveToBrowse, premissionRef }) => {
     userName: "",
     password: "",
     nickName: "",
-    picture: ""
+    profilePicture: ""
   });
   const navigate = useNavigate();
 
   const getUser = () => {
     const userI = JSON.parse(localStorage.getItem("userI"));
     const myHeaders = new Headers();
+    myHeaders.append("authorization", `${userI.token}`);
     myHeaders.append("Content-Type", "application/json");
 
     const requestOptions = {
@@ -31,12 +32,12 @@ const UserProfile = ({ onApproveToBrowse, premissionRef }) => {
     )
       .then((response) => response.json())
       .then((result) => {
-        setUser(result.user);
+        setUser(result);
         setUserData({
-          userName: result.user.userName,
-          password: result.user.password,
-          nickName: result.user.nickName,
-          picture:  result.user.picture,
+          userName: result.userName,
+          password: result.password,
+          nickName: result.nickName,
+          profilePicture:  result.profilePicture,
         });
       })
       .catch((error) => console.error(error));
@@ -47,13 +48,13 @@ const UserProfile = ({ onApproveToBrowse, premissionRef }) => {
   }, []);
 
   const updateUser = () => {
+    const userI = JSON.parse(localStorage.getItem("userI"));
     const myHeaders = new Headers();
+    myHeaders.append("authorization", `${userI.token}`);
     myHeaders.append("Content-Type", "application/json");
 
     const raw = JSON.stringify({
-      newData: {
-        ...userData,
-      },
+        ...userData,    
     });
 
     const requestOptions = {
@@ -62,9 +63,10 @@ const UserProfile = ({ onApproveToBrowse, premissionRef }) => {
       body: raw,
       redirect: "follow",
     };
+    console.log(raw)
 
     fetch(
-      `http://localhost:5000/api/users/getUser?id=${user._id}`,
+      `http://localhost:5000/api/users/${userI.userId}`,
       requestOptions
     )
       .then((response) => response.json())
@@ -76,23 +78,18 @@ const UserProfile = ({ onApproveToBrowse, premissionRef }) => {
   };
 
   const deleteUser = () => {
+    const userI = JSON.parse(localStorage.getItem("userI"));
     const myHeaders = new Headers();
-    myHeaders.append("Authorization", `${user.token}`);
+    myHeaders.append("authorization", `${userI.token}`);
     myHeaders.append("Content-Type", "application/json");
-
-    const raw = JSON.stringify({
-      id: user.id,
-      token: user.token,
-    });
 
     const requestOptions = {
       method: "DELETE",
       headers: myHeaders,
-      body: raw,
       redirect: "follow",
     };
 
-    fetch(`http://localhost:5000/api/users/${user.id}`, requestOptions)
+    fetch(`http://localhost:5000/api/users/${userI.userId}`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
         console.log(result);
