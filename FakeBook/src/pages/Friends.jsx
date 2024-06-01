@@ -48,7 +48,7 @@ const Friends = ({ onApproveToBrowse, premissionRef }) => {
         throw new Error("Failed to get user!");
       }
       setFriendRequests(user.friendRequests); // Ensure the field name matches your schema
-      console.log(user.friendRequests);
+      console.log("row 51 " + user.friendRequests);
     } catch (error) {
       console.error("Error fetching friend requests:", error);
       toast.error("Failed to fetch friend requests.");

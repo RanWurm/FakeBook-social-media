@@ -59,7 +59,8 @@ module.exports.getUserById = async(req, res) => {
         const isFriend = targetUser.friends.some(friend => friend.id === requesterId);  // Ensure types are compatible
         const userItself = userService.verifyUser(userId, requesterId);
         if (!isFriend && !userItself) {
-            return res.status(403).json({ error: "Access denied: user is not a friend" });
+            const { id, nickName, userName, profilePicture } = targetUser;
+            return res.status(200).json({ id, nickName, userName, profilePicture });
         }
 
         // Return the user details
@@ -108,8 +109,10 @@ module.exports.getFriendsList = async (req, res) => {
 	if (!isFriend && !userItself) {
 		return res.status(403).json({ message: "Access denied: Requestor is not a friend of the user or the user itself." });
 	}
+
 	try {
 		const friendsList = await userService.getFriendsList(userId);
+        console.log(friendsList);
 		res.status(200).json(friendsList);
 	} catch (error) {
 		res.status(500).json({ error: error.message });

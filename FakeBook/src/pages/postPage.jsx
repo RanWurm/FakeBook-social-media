@@ -2,127 +2,166 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import "../css/styles/friendsStyles.css";
 import { toast } from "react-toastify";
-const PostPage = ({getUserFriendsList}) => {
+
+const PostPage = ({ getUserFriendsList }) => {
   const { userId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const [content, setContent] = useState([]);
   const [isFriend, setIsFriend] = useState(false);
+  const [userDetails, setUserDetails] = useState({});
   const postDetails = location.state;
-  
+
   useEffect(() => {
-    console.log("line 12");
     fetchData();
   }, [userId]);
 
   const fetchData = async () => {
     const userI = JSON.parse(localStorage.getItem("userI"));
-    console.log(userId);
-    console.log(userI.userId);
-
+  
     if (userId === userI.userId) {
       navigate(`/feed`);
+      return;
     }
-
+  
     try {
-      	const response = await fetch(`/api/users/${userId}/posts`, {  // Adjusted endpoint
-        headers: { 'Authorization': `Bearer ${userI.token}` }
+      debugger;
+      // Fetch the friends list
+      const friendsResponse = await fetch(`http://localhost:5000/api/users/${userI.userId}/friends`, {
+        headers: { 'Authorization': userI.token }
       });
-      if (!response.ok) throw new Error('Failed to fetch data');
-      const data = await response.json();
-
-      if (Array.isArray(data)) {
-        setContent(data);  // Assuming data is an array of posts if they are friends
-        setIsFriend(true);
-      } else {
-        setContent([data]);  // Assuming data is user details if not friends
-        setIsFriend(false);
+      if (!friendsResponse.ok) {
+        console.error('Failed to fetch friends list:', friendsResponse.statusText);
+        const errorText = await friendsResponse.text();
+        console.error('Response text:', errorText);
+        throw new Error('Failed to fetch friends list');
+      }
+      const friendsData = await friendsResponse.json();
+      const friendsList = Array.isArray(friendsData) ? friendsData : [];
+      console.log('Fetched friends list:', friendsList);
+  
+      const isFriend = friendsList.includes(parseInt(userId, 10));
+      setIsFriend(isFriend);
+  
+      // Fetch the requested user's details
+      const userDetailsResponse = await fetch(`http://localhost:5000/api/users/${userId}`, {
+        headers: { 'Authorization': userI.token }
+      });
+      if (!userDetailsResponse.ok) {
+        console.error('Failed to fetch user details:', userDetailsResponse.statusText);
+        const errorText = await userDetailsResponse.text();
+        console.error('Response text:', errorText);
+        throw new Error('Failed to fetch user details');
+      }
+      const userDetailsData = await userDetailsResponse.json();
+      console.log('Fetched user details:', userDetailsData);
+      setUserDetails(userDetailsData);
+  
+      // If they are friends, fetch the posts
+      if (isFriend) {
+        const postsResponse = await fetch(`http://localhost:5000/api/users/${userId}/posts`, {
+          headers: { 'Authorization': userI.token }
+        });
+        if (!postsResponse.ok) {
+          console.error('Failed to fetch posts:', postsResponse.statusText);
+          const errorText = await postsResponse.text();
+          console.error('Response text:', errorText);
+          throw new Error('Failed to fetch posts');
+        }
+        const postsData = await postsResponse.json();
+        console.log('Fetched posts:', postsData);
+  
+        // Fetch the author's nickname for each post
+        const postsWithAuthors = await Promise.all(postsData.map(async (post) => {
+          const authorResponse = await fetch(`http://localhost:5000/api/users/${post.authorId}`, {
+            headers: { 'Authorization': userI.token }
+          });
+          if (!authorResponse.ok) {
+            console.error('Failed to fetch author details:', authorResponse.statusText);
+            const errorText = await authorResponse.text();
+            console.error('Response text:', errorText);
+            throw new Error('Failed to fetch author details');
+          }
+          const authorData = await authorResponse.json();
+          return { ...post, authorNickName: authorData.nickName };
+        }));
+  
+        setContent(postsWithAuthors);
       }
     } catch (error) {
       console.error('Error:', error);
     }
   };
-  
-  
-  
-  async function getUser(id) {
-	debugger;
-	const userI = JSON.parse(localStorage.getItem("userI"));
-    try {
-      const response = await fetch(`http://localhost:5000/api/users/${id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `${userI.token}`, // Correctly formatted token header
-        },
-      });
-      if (response.status === 404) {
-        return 404; // Or handle 404 specifically if needed
-      }
-      const data = await response.json();
-      return data; // Returns the entire user object
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      throw error; // Rethrowing the error might be necessary for caller to handle
-    }
-}
-
-
-  console.log(location.state);  // This will log the state you passed
-  
-  
   const sendFriendRequest = async () => {
     const userI = JSON.parse(localStorage.getItem("userI"));
     const myHeaders = new Headers();
-    myHeaders.append("Authorization", `${userI.token}`);
+    myHeaders.append("Authorization", userI.token);
     myHeaders.append("Content-Type", "application/json");
-	debugger;
-	let user = await getUser(userI.userId)
-	console.log(user);
-    // Check if the users are already friends
-    const areFriends = user.friends.some((friend) => friend === user.userId);
 
-    if (areFriends) {
-      toast.info("You are already friends");
-      return;
+    try {
+      const friendsResponse = await fetch(`http://localhost:5000/api/users/${userI.userId}/friends`, {
+        headers: { 'Authorization': userI.token }
+      });
+      if (!friendsResponse.ok) {
+        console.error('Failed to fetch friends list:', friendsResponse.statusText);
+        const errorText = await friendsResponse.text();
+        console.error('Response text:', errorText);
+        throw new Error('Failed to fetch friends list');
+      }
+      // const friendsData = await friendsResponse.json();
+      const friendsList = Array.isArray(friendsResponse) ? friendsResponse : [];
+      const areFriends = friendsList.includes(parseInt(userId, 10));
+
+      if (areFriends) {
+        toast.info("You are already friends");
+        return;
+      }
+
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        redirect: "follow",
+      };
+
+      const response = await fetch(`http://localhost:5000/api/users/${userId}/friends`, requestOptions);
+      if (!response.ok) {
+        console.error('Failed to send friend request:', response.statusText);
+        const errorText = await response.text();
+        console.error('Response text:', errorText);
+        throw new Error('Failed to send friend request');
+      }
+      const result = await response.json();
+
+      if (result.message) {
+        toast.success("Friend Request Sent");
+        getUserFriendsList();
+      } else if (result.error) {
+        toast.error(result.error);
+      }
+    } catch (error) {
+      toast.error("Friend Request Pending");
     }
-	console.log(`${userId}`);
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-
-      redirect: "follow",
-    };
-
-    fetch(
-      `http://localhost:5000/api/users/${userId}/friends`,
-      requestOptions
-    )
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.message) {
-          console.log(result);
-          toast.success("Friend Request Sent");
-          getUserFriendsList();
-        } else if (result.error) {
-          toast.error(result.error);
-        }
-      })
-      .catch((error) => toast.error("Friend Request Pending"));
   };
+  console.log(userDetails)
+
   return (
     <div className="userCardContainer">
-	  <img src={postDetails.icon} alt="" />
-	  
-      <h2>User Name: {postDetails.author}</h2>
-
-	          <button className="addFriendBtn" onClick={sendFriendRequest}>
+      <img src={userDetails.icon || postDetails.icon} alt="" />
+      <h2>{userDetails.nickName || postDetails.author}</h2>
+      {!isFriend && (
+        <button className="addFriendBtn" onClick={sendFriendRequest}>
           Add Friend
         </button>
-      {/* More details can be rendered here */}
+      )}
+      {isFriend && content.map((post, index) => (
+        <div key={index} className="post">
+          <h3>{post.title}</h3>
+          <p>{post.body}</p>
+          <p>Author: {post.authorNickName}</p>
+        </div>
+      ))}
     </div>
   );
 };
-
 
 export default PostPage;
