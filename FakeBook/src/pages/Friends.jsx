@@ -59,7 +59,7 @@ const Friends = ({ onApproveToBrowse, premissionRef }) => {
   
   
   useEffect(() => {
-    debugger;
+    
     const userI = JSON.parse(localStorage.getItem("userI"));
     if (!userI || !userI.token) {
       // Handle unauthenticated session or expired token
