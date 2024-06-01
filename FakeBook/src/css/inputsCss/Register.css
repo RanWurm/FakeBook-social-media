@@ -1,0 +1,41 @@
+.container {
+	display: flex;
+  }
+  
+  .form-group {
+	margin-bottom: 15px;
+  }
+  
+  .form-group label {
+	display: block;
+	margin-bottom: 5px;
+  }
+  
+  .form-group input {
+	width: 250px;
+	padding: 8px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+  }
+  
+  .button {
+	width: 100%;
+	padding: 10px;
+	border: none;
+	border-radius: 3px;
+	background-color: #005cbf;
+	color: #fff;
+	cursor: pointer;
+	transition: background-color 0.3s;
+  }
+  
+  .button:hover {
+	background-color: #0056b3;
+  }
+  
+  .wrong_input{
+	color: red;
+  }
+  .image_input{
+	width:100px;
+}

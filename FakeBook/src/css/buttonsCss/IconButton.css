@@ -1,0 +1,28 @@
+/* IconButton.css */
+
+.like-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    transition: background-color 0.3s ease;
+}
+
+.like-button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.like-button img {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+}
+
+.like-button span {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}

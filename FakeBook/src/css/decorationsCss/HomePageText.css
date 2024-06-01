@@ -1,0 +1,23 @@
+
+
+.left_logo_col{
+	flex:0.5;
+	display:flex;
+	align-items: center;
+	justify-content: flex-start;
+	color: blue;
+	font-size: 90px;
+	margin-left: 90px;
+	margin-top: 50px;
+}
+.sub_left_col{
+	flex:0.5;
+	display:flex;
+	align-items: center;
+	justify-content:flex-start;
+	font-size: 25px;
+	margin-left: 90px;
+	margin-top: 0px;
+	margin-right:50px
+
+}

@@ -1,0 +1,22 @@
+/* Base dark mode styles */
+.dark-mode {
+	background-color: #121212;
+	color: #e0e0e0;
+}
+
+/* Specific dark mode styles for elements in UserProfile */
+.dark-mode .login-container {
+	background-color: #424242;
+	color: #fff;
+}
+
+.dark-mode .login_button, .dark-mode .delete-button {
+	background-color: #555;
+	color: #ccc;
+}
+
+.dark-mode .login_button:hover, .dark-mode .delete-button:hover {
+	background-color: #777;
+}
+
+/* Add more specific styles as needed */

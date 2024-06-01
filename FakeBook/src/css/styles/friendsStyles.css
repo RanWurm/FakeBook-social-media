@@ -1,0 +1,140 @@
+
+.app-container.dark-mode {
+  /* Dark mode styles */
+  background-color: #1e1e1e;
+}
+
+.addUsersContainer {
+  display: flex;
+  gap: 20px;
+  padding: 1rem;
+  width: 1200px;
+  margin: 0 auto;
+}
+
+.usersFilter {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.usersFilter button {
+  padding: 10px;
+  border: 0;
+  outline: 0;
+  background-color: #4267b2;
+  color: white;
+  cursor: pointer;
+  transition: 200ms ease;
+  border-radius: 10px;
+}
+
+.usersFilter button:hover {
+  background-color: #219ebc;
+}
+
+.allUsers {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 20px;
+  padding: 10px 20px;
+  text-align: center;
+  background-color: #f2f2f2;
+  border-radius: 10px;
+}
+
+.userCardContainer {
+  background-color: #fff;
+  padding: 1.2rem;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 3px #219ebc;
+}
+
+.userCardContainer img {
+  width: 100px;
+  height: 100px;
+  border-radius: 999px;
+}
+
+.userCardContainer button {
+  padding: 10px;
+  border: 0;
+  outline: 0;
+  background-color: #4267b2;
+  color: white;
+  cursor: pointer;
+  transition: 200ms ease;
+  border-radius: 10px;
+}
+
+.userCardContainer button:hover {
+  background-color: #219ebc;
+}
+
+.acceptReject {
+  display: flex;
+  gap: 10px;
+}
+
+/* General dark mode background and text colors */
+.dark-mode {
+background-color: #121212; /* Dark background for the whole page */
+color: #e0e0e0; /* Light text color for contrast */
+
+}.dark-mode {
+background-color: #121212; /* Dark background for the whole page */
+color: #e0e0e0; /* Light text color for contrast */
+}
+
+/* Dark mode styles for specific components */
+.addUsersContainer.dark-mode {
+background-color: #333; /* Darker background for the container */
+}
+
+.usersFilter.dark-mode button {
+background-color: #555; /* Darker background for buttons */
+color: #ccc; /* Lighter text for better readability */
+}
+
+.usersFilter.dark-mode button:hover {
+background-color: #777; /* Slightly lighter background on hover */
+}
+
+.allUsers.dark-mode {
+background-color: #242424; /* Dark background for grid container */
+color: #ddd; /* Lighter text color for readability */
+}
+
+.userCardContainer.dark-mode {
+background-color: #2a2a2a; /* Dark background for cards */
+box-shadow: 0 0 5px #000; /* Subtle shadow for depth */
+}
+
+.userCardContainer.dark-mode img {
+border: 3px solid #333; /* Darker border for images */
+}
+
+.userCardContainer.dark-mode button {
+background-color: #555; /* Darker button background */
+color: #ccc; /* Lighter text color */
+}
+
+.userCardContainer.dark-mode button:hover {
+background-color: #777; /* Lighten button background on hover */
+}
+
+.acceptReject.dark-mode {
+color: #e0e0e0; /* Ensure text inside this div is also light */
+}
+
+/* You can continue to add dark mode styles for other elements as needed */
+.dark-mode .usersFilter button {
+background-color: #555; /* Example dark mode button background */
+color: #ccc; /* Example dark mode text color */
+}
+
