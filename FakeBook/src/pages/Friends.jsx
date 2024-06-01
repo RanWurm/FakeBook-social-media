@@ -14,9 +14,13 @@ const Friends = ({ onApproveToBrowse, premissionRef }) => {
   const [showMyFriends, setShowMyFriends] = useState(false);
   const [showFriendRequests, setShowFriendRequests] = useState(false);
   const [friendRequests,setFriendRequests] = useState([]);
+  const [isDarkMode, setIsDarkMode] = useState(false); // Example of local state definition for dark mode
   const navigate = useNavigate();
   
- 
+  const handleDarkModeClick = () =>{
+    setIsDarkMode(!isDarkMode);
+  }
+  
   async function getUser() {
     const userI = JSON.parse(localStorage.getItem("userI"));
       try {
@@ -37,8 +41,6 @@ const Friends = ({ onApproveToBrowse, premissionRef }) => {
         throw error; // Rethrowing the error might be necessary for caller to handle
       }
   }
-  
-  
   
   
   const handleFetchFriendRequests = async () => {
@@ -105,35 +107,31 @@ const Friends = ({ onApproveToBrowse, premissionRef }) => {
     });
   };
 
-  const showUsersHandler = () => {
-    setShowUsers(true);
-    setShowMyFriends(false);
-    setShowFriendRequests(false);
-  };
+
   const showRequestsHandler = () => {
     setShowUsers(false);
     setShowMyFriends(false);
     setShowFriendRequests(true);
   };
-  const showFriendsHandler = () => {
-    setShowUsers(false);
-    setShowMyFriends(true);
-    setShowFriendRequests(false);
-  };
 
+  const updateFriendRequests = (senderId) => {
+    setFriendRequests(prevRequests => prevRequests.filter(id => id !== senderId));
+  };
   return (
-    <div>
-      <NavBar firstHandleClick={handleLogOut} />
+    <div className={`app-container ${isDarkMode ? "dark-mode" : ""}`}>
+      <NavBar firstHandleClick={handleLogOut} secondHandleClick={handleDarkModeClick} darkMode={isDarkMode}/>
       <div className="addUsersContainer">
         <div className="usersFilter">
           <button onClick={showRequestsHandler}>Friend Requests</button>
 
         </div>
-        <div>
+        <div className={`app-container ${isDarkMode ? "dark-mode" : ""}`}>
         {showFriendRequests && (
-    <FriendsRequests
-        users={friendRequests}  // Changed from `friendsRequest` to `friendRequests`
-    />
+          <FriendsRequests
+  users={friendRequests}
+  updateFriendRequests={updateFriendRequests} // Prop to update the list of friend requests
+/>
+
 )}
 
           {showMyFriends && (

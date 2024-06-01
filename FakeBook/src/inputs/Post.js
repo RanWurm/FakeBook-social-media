@@ -124,7 +124,7 @@ function Post({
   return (
     <div key={postID} className={`post ${isDarkMode ? "dark-mode" : ""}`}>
       <div className="post-header">
-      <button className="" onClick={handleAvatarClick}>
+      <button className="interaction-button" onClick={handleAvatarClick}>
   <img className="avatar" src={icon} alt={`${author}'s avatar`} />
 </button>
         <div className="author-name">{author}</div>

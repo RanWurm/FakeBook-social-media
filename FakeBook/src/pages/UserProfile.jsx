@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import NavBar from "../Bars/NavBar";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import "../css/pagesCss/userProfile.css"
 const UserProfile = ({ onApproveToBrowse, premissionRef }) => {
   const [logOut, setLogOut] = useState(false);
   const [user, setUser] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [userData, setUserData] = useState({
     userName: "",
     password: "",
@@ -13,7 +14,9 @@ const UserProfile = ({ onApproveToBrowse, premissionRef }) => {
     profilePicture: ""
   });
   const navigate = useNavigate();
-
+  const handleDarkModeClick = () =>{
+    setIsDarkMode(!isDarkMode);
+  }
   const getUser = () => {
     const userI = JSON.parse(localStorage.getItem("userI"));
     const myHeaders = new Headers();
@@ -108,8 +111,8 @@ const UserProfile = ({ onApproveToBrowse, premissionRef }) => {
   };
 
   return (
-    <div>
-      <NavBar firstHandleClick={handleLogOut} />
+    <div className={`app-container ${isDarkMode ? "dark-mode" : ""}`}>
+      <NavBar firstHandleClick={handleLogOut} secondHandleClick={handleDarkModeClick} darkMode={isDarkMode}/>
 
       <div style={{ margin: "10px auto" }} className="login-container">
         <h2>Update User</h2>

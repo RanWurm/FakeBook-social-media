@@ -10,6 +10,7 @@ const PostPage = ({ getUserFriendsList }) => {
   const [content, setContent] = useState([]);
   const [isFriend, setIsFriend] = useState(false);
   const [userDetails, setUserDetails] = useState({});
+  const [pendingList, setPendingList]  = useState([]);
   const postDetails = location.state;
 
   useEffect(() => {
@@ -139,6 +140,7 @@ const PostPage = ({ getUserFriendsList }) => {
         toast.error(result.error);
       }
     } catch (error) {
+      
       toast.error("Friend Request Pending");
     }
   };
