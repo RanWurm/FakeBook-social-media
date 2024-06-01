@@ -10,7 +10,7 @@ const PostPage = ({ getUserFriendsList }) => {
   const [content, setContent] = useState([]);
   const [isFriend, setIsFriend] = useState(false);
   const [userDetails, setUserDetails] = useState({});
-  const [pendingList, setPendingList]  = useState([]);
+  const [pendingList, setPendingList] = useState([]);
   const postDetails = location.state;
 
   useEffect(() => {
@@ -19,14 +19,13 @@ const PostPage = ({ getUserFriendsList }) => {
 
   const fetchData = async () => {
     const userI = JSON.parse(localStorage.getItem("userI"));
-  
+
     if (userId === userI.userId) {
       navigate(`/feed`);
       return;
     }
-  
+
     try {
-      debugger;
       // Fetch the friends list
       const friendsResponse = await fetch(`http://localhost:5000/api/users/${userI.userId}/friends`, {
         headers: { 'Authorization': userI.token }
@@ -40,10 +39,10 @@ const PostPage = ({ getUserFriendsList }) => {
       const friendsData = await friendsResponse.json();
       const friendsList = Array.isArray(friendsData) ? friendsData : [];
       console.log('Fetched friends list:', friendsList);
-  
+
       const isFriend = friendsList.includes(parseInt(userId, 10));
       setIsFriend(isFriend);
-  
+
       // Fetch the requested user's details
       const userDetailsResponse = await fetch(`http://localhost:5000/api/users/${userId}`, {
         headers: { 'Authorization': userI.token }
@@ -57,7 +56,7 @@ const PostPage = ({ getUserFriendsList }) => {
       const userDetailsData = await userDetailsResponse.json();
       console.log('Fetched user details:', userDetailsData);
       setUserDetails(userDetailsData);
-  
+
       // If they are friends, fetch the posts
       if (isFriend) {
         const postsResponse = await fetch(`http://localhost:5000/api/users/${userId}/posts`, {
@@ -71,10 +70,11 @@ const PostPage = ({ getUserFriendsList }) => {
         }
         const postsData = await postsResponse.json();
         console.log('Fetched posts:', postsData);
-  
+
         // Fetch the author's nickname for each post
         const postsWithAuthors = await Promise.all(postsData.map(async (post) => {
-          const authorResponse = await fetch(`http://localhost:5000/api/users/${post.authorId}`, {
+          console.log('current post', post);
+          const authorResponse = await fetch(`http://localhost:5000/api/users/${post.authorID}`, {
             headers: { 'Authorization': userI.token }
           });
           if (!authorResponse.ok) {
@@ -86,13 +86,14 @@ const PostPage = ({ getUserFriendsList }) => {
           const authorData = await authorResponse.json();
           return { ...post, authorNickName: authorData.nickName };
         }));
-  
+
         setContent(postsWithAuthors);
       }
     } catch (error) {
       console.error('Error:', error);
     }
   };
+
   const sendFriendRequest = async () => {
     const userI = JSON.parse(localStorage.getItem("userI"));
     const myHeaders = new Headers();
@@ -109,9 +110,8 @@ const PostPage = ({ getUserFriendsList }) => {
         console.error('Response text:', errorText);
         throw new Error('Failed to fetch friends list');
       }
-      // const friendsData = await friendsResponse.json();
-      const friendsList = Array.isArray(friendsResponse) ? friendsResponse : [];
-      const areFriends = friendsList.includes(parseInt(userId, 10));
+      const friendsList = await friendsResponse.json();
+      const areFriends = Array.isArray(friendsList) ? friendsList.includes(parseInt(userId, 10)) : false;
 
       if (areFriends) {
         toast.info("You are already friends");
@@ -140,10 +140,10 @@ const PostPage = ({ getUserFriendsList }) => {
         toast.error(result.error);
       }
     } catch (error) {
-      
       toast.error("Friend Request Pending");
     }
   };
+
   console.log(userDetails)
 
   return (
@@ -158,8 +158,9 @@ const PostPage = ({ getUserFriendsList }) => {
       {isFriend && content.map((post, index) => (
         <div key={index} className="post">
           <h3>{post.title}</h3>
-          <p>{post.body}</p>
-          <p>Author: {post.authorNickName}</p>
+          <p dangerouslySetInnerHTML={{ __html: post.body }}></p> {/* Display HTML content */}
+          <p>{post.content}</p>
+          <img src={post.picture} alt="" />
         </div>
       ))}
     </div>
