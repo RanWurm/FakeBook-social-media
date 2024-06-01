@@ -6,7 +6,6 @@ const key = "133221333123111";
 
 
 module.exports.createUser = async (uName, pWord, fakeNick, profPic) => {
-	console.log("in the create user - services");
 		try {
 			const largestId = await User.findOne().sort({id: -1}).limit(1).select('id');
 			const userID = largestId ? largestId.id + 1 : 1;
@@ -17,7 +16,6 @@ module.exports.createUser = async (uName, pWord, fakeNick, profPic) => {
 				profilePicture: profPic,
 				id: userID
 			});
-			console.log(user);
 			return await user.save();
 		} catch (error) {
 			console.log("Some Error:", error);
@@ -27,7 +25,6 @@ module.exports.createUser = async (uName, pWord, fakeNick, profPic) => {
 
 
 module.exports.login = async (uName, pWord) => {
-	console.log("in the login - services");
 		try {
 			let user = await User.findOne({userName: uName, password: pWord});
 			if (user !== null) {
@@ -39,7 +36,6 @@ module.exports.login = async (uName, pWord) => {
 				);
 				
 			}
-			console.log(user);
 			return user;
 		} catch (error) {
 			console.error("Error during login:", error);
@@ -49,13 +45,11 @@ module.exports.login = async (uName, pWord) => {
 
 
 	module.exports.getUserById = async (userID) => {
-		console.log("in the get user by id - services");
 		try {
 			const user = await User.findOne({ id: userID });
 			if (!user) {
 				throw new Error('User not found');
 			}
-			console.log(user);
 			return user;
 		} catch (error) {
 			
@@ -65,7 +59,6 @@ module.exports.login = async (uName, pWord) => {
 
 
 module.exports.editUserById = async (userId, newData) => {
-	console.log("in the edit user by id - services");
 		try {
 			// Use findOneAndUpdate with the custom 'id' field
 			const updatedUser = await User.findOneAndUpdate({ id: userId }, newData, { new: true });
@@ -81,7 +74,6 @@ module.exports.editUserById = async (userId, newData) => {
 
 
 module.exports.deleteUserById = async (idToDel) => {
-		console.log("in the delete user by id - services");
 		try {
 			const userToDel = await User.findOneAndDelete({id: idToDel});
 			return userToDel;
@@ -93,7 +85,6 @@ module.exports.deleteUserById = async (idToDel) => {
 
 
 module.exports.getFriendsList = async (userId) => {
-		console.log("in the get friends list - services");
 		try {
 			const user = await User.findOne({ id: userId });
 			if (!user) {
@@ -107,7 +98,6 @@ module.exports.getFriendsList = async (userId) => {
 	};
 
 module.exports.sendFriendRequest = async (senderId, userId) => {
-		console.log("in the send friend request - services");
 		try {
 			const user = await User.findOne({ id: userId });
 			if (!user) {
@@ -130,7 +120,6 @@ module.exports.sendFriendRequest = async (senderId, userId) => {
 	};
 
 	module.exports.approveFriendRequest = async(requestorId, userId) => {
-		console.log("in the approve friend request - services");
 		const recipient = await User.findOne({ id: userId });
 		if (!recipient) {
 			throw new Error('Recipient not found');
@@ -157,7 +146,6 @@ module.exports.sendFriendRequest = async (senderId, userId) => {
 	};
 
 module.exports.deleteFriend = async(requestorId, deleteId) => {
-		console.log("in the delete friend - services");
 		const user = await User.findOne({ id: requestorId });
 		if (!user) {
 			throw new Error('user not found');

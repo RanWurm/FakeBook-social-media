@@ -66,15 +66,12 @@ const UserProfile = ({ onApproveToBrowse, premissionRef }) => {
       body: raw,
       redirect: "follow",
     };
-    console.log(raw)
-
     fetch(
       `http://localhost:5000/api/users/${userI.userId}`,
       requestOptions
     )
       .then((response) => response.json())
       .then((result) => {
-        console.log(result);
         toast.success("Profile Updated");
       })
       .catch((error) => console.error(error));

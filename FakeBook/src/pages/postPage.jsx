@@ -38,7 +38,7 @@ const PostPage = ({ getUserFriendsList }) => {
       }
       const friendsData = await friendsResponse.json();
       const friendsList = Array.isArray(friendsData) ? friendsData : [];
-      console.log('Fetched friends list:', friendsList);
+
 
       const isFriend = friendsList.includes(parseInt(userId, 10));
       setIsFriend(isFriend);
@@ -54,7 +54,6 @@ const PostPage = ({ getUserFriendsList }) => {
         throw new Error('Failed to fetch user details');
       }
       const userDetailsData = await userDetailsResponse.json();
-      console.log('Fetched user details:', userDetailsData);
       setUserDetails(userDetailsData);
 
       // If they are friends, fetch the posts
@@ -69,11 +68,9 @@ const PostPage = ({ getUserFriendsList }) => {
           throw new Error('Failed to fetch posts');
         }
         const postsData = await postsResponse.json();
-        console.log('Fetched posts:', postsData);
 
         // Fetch the author's nickname for each post
         const postsWithAuthors = await Promise.all(postsData.map(async (post) => {
-          console.log('current post', post);
           const authorResponse = await fetch(`http://localhost:5000/api/users/${post.authorID}`, {
             headers: { 'Authorization': userI.token }
           });
@@ -143,8 +140,6 @@ const PostPage = ({ getUserFriendsList }) => {
       toast.error("Friend Request Pending");
     }
   };
-
-  console.log(userDetails)
 
   return (
     <div className="userCardContainer">

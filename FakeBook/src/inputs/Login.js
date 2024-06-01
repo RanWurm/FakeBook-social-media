@@ -63,7 +63,6 @@ function Login({ upDateApproval, premissionRef}) {
       }
       const data = await response.json();
       tokenn = data.token;
-      debugger;
       let user = await getUser(data.id); // Fetch user with the token
       if (!user) {
         throw new Error("Failed to retrieve user data");

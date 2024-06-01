@@ -7,7 +7,7 @@ const { ObjectId } = require('mongoose').Types;
 
 
 module.exports.createUser = async(req, res) => {
-    console.log("in the createUser - controller");
+
 	try {
 		console.log(req.body);
 		const { userName, password, nickName, profilePicture } = req.body;
@@ -26,7 +26,6 @@ module.exports.createUser = async(req, res) => {
 };
 
 module.exports.login = async(req, res) => {
-    console.log("in the login - controller");
 	try {
         console.log(req.body);
 		const userName = req.body.userName;
@@ -43,7 +42,6 @@ module.exports.login = async(req, res) => {
 };
 
 module.exports.getUserById = async(req, res) => {
-    console.log("in the get user by id - controller");
     const userId = req.params.id;  // Custom numeric ID from the URL
     const requesterId = req.user.id;  // ID of the authenticated user from JWT
     console.log("the requested user id: " + userId);
@@ -73,7 +71,6 @@ module.exports.getUserById = async(req, res) => {
 };
 
 module.exports.deleteUserById = async(req, res) => {
-    console.log("in the delete user by id - controller");
     try {
         const userIdToDelete = req.params.id;  // Get the user ID from URL parameters
 
@@ -97,13 +94,10 @@ module.exports.deleteUserById = async(req, res) => {
 };
 
 module.exports.getFriendsList = async (req, res) => {
-    console.log("in the get friends list - controller");
 	const userId = req.params.id;
     const requestorId = req.user.id;
 
 	const isFriend = await userService.areFriends(userId, requestorId);
-    console.log("in the get friends list - controller, user id is: " + userId +
-    "and requestorId is: " + requestorId);
 	const userItself = userService.verifyUser(userId, requestorId);
 
 	if (!isFriend && !userItself) {
@@ -122,7 +116,6 @@ module.exports.getFriendsList = async (req, res) => {
 
 
 module.exports.editUserById = async(req, res) => {
-    console.log("in the edit user by id - controller");
 
     try {
         const userId = req.params.id;  // User ID from the URL parameters
@@ -159,9 +152,6 @@ module.exports.editUserById = async(req, res) => {
 
 
 module.exports.sendFriendRequest = async(req, res) => {
-    console.log(req.params);
-    console.log("in the send friend request - controller");
-    console.log(req);
     try {
         const userId = req.params.id;
         const requestorId = req.user.id;
@@ -176,7 +166,6 @@ module.exports.sendFriendRequest = async(req, res) => {
 
 
 module.exports.approveFriendRequest = async(req, res) => {
-    console.log("in the approve friend request - controller");
     try {
         const userId = req.params.id;
         const approvedId = req.params.fid;
@@ -199,7 +188,6 @@ module.exports.approveFriendRequest = async(req, res) => {
 
 
 module.exports.deleteFriend = async(req, res) => {
-    console.log("in the delete friend - controller");
 	try {
 		const userId = req.params.id;
         const friendToDelete = req.params.fid;
