@@ -15,11 +15,20 @@ npm test
 It should show you 7 tests that have passed.
 ## Running the web app
 ### Initiation
-Now you're ready to run the app. In the terminal, nevagate to the server folder and write:
+Now you're ready to run the app. In the terminal, nevagate to the project folder and write:
+```
+npm install
+```
+then you should nevigate to the FakeBook folder write once again:
+```
+npm install
+```
+open a second terminal nevegate to the server folder and write:
 ```
 node server.js
 ```
-open a second terminal nevegate to the fakebook folder and write:
+you can you the first terminal or open a new one, and nevigate to the fakeBook folder,there you should write:
+
 ```
 npm start
 ```
